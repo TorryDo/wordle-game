@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wordle_game/src/ui/components/word_board/word_grid_view.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
@@ -11,11 +10,17 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+
   @override
   Widget build(BuildContext context) {
+    return _page();
+  }
+
+
+  Widget _page() {
     var screenWidth = getWidth(context);
     var marginHorizontal = 8.0;
-    var wordGridViewHeight = screenWidth - marginHorizontal*2;
+    var wordGridViewHeight = screenWidth - marginHorizontal * 2;
 
     return Material(
       child: Container(

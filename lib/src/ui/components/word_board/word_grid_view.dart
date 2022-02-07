@@ -23,28 +23,19 @@ class WordGridView extends StatefulWidget {
 
 class _WordGridViewState extends State<WordGridView> {
 
-  late StreamController _streamController;
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _streamController = StreamController();
-  }
 
-  @override
-  void dispose(){
-    _streamController.close();
-    super.dispose();
+    var itemNumber = (widget.wordLength + 1) * widget.wordLength;
+    charSet = List.filled(itemNumber, '-');
+
   }
 
   @override
   Widget build(BuildContext context) {
 
-    var itemNumber = (widget.wordLength + 1) * widget.wordLength;
-
-    charSet = List.filled(itemNumber, '-');
-
-    return wordGridView(widget.wordLength,widget.width);
+    return wordGridView(widget.wordLength, widget.width);
   }
 
   late List<String> charSet;
@@ -63,39 +54,30 @@ class _WordGridViewState extends State<WordGridView> {
       width: double.infinity,
       height: gridViewHeight,
       color: widget.backgroundColor,
-      child: StreamBuilder(
-        stream: _streamController.stream,
-        builder: (context, snapshot) {
-          return GridView.builder(
-              itemCount: itemNumber,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: charNumber,
-                  crossAxisSpacing: crossAxisSpacing,
-                  mainAxisSpacing: mainAxisSpacing),
-              itemBuilder: (context, index) => CharBox(
+      child: GridView.builder(
+          itemCount: itemNumber,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: charNumber,
+              crossAxisSpacing: crossAxisSpacing,
+              mainAxisSpacing: mainAxisSpacing),
+          itemBuilder: (context, index) => CharBox(
                 index: index,
                 boxSize: charBoxSize,
                 character: charSet[index],
                 onClick: (index) {
                   _onCharBoxClick(index);
                 },
-              )
-          );
-        },
-      ),
+              )),
     );
   }
 
   void _onCharBoxClick(int index) {
-
     log("word_grid_view, old value = ${charSet[index]}");
 
     setState(() {
       charSet[index] = 'B';
     });
-
-    _streamController.add(null);
 
     log("word_grid_view, new value = ${charSet[index]}");
   }
