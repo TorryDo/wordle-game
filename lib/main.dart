@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/theme_provider.dart';
-import 'package:wordle_game/src/ui/game_screen.dart';
+import 'package:wordle_game/src/ui/game_screen/game_screen.dart';
 
 void main() {
   runApp(const MyApp());
