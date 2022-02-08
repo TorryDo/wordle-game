@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
-import 'package:wordle_game/src/res/dimens.dart';
+import '../../../utils/res/dimens.dart';
 
 class KeyBoardButton extends StatefulWidget {
   final double? width;

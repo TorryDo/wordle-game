@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/common/widget/svg_icon.dart';
-import 'package:wordle_game/src/res/dimens.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board_button.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
+
+import '../../../utils/res/dimens.dart';
 
 class KeyBoard extends StatefulWidget {
   final Color backgroundColor;

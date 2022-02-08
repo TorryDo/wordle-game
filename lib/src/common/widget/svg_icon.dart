@@ -30,11 +30,14 @@ class _SvgIconState extends State<SvgIcon> {
   }
 
   Widget _outer() {
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      color: widget.backgroundColor,
-      child: SvgPicture.asset(widget.uri, color: widget.color),
+    return GestureDetector(
+      onTap: widget.onClick,
+      child: Container(
+        width: widget.width,
+        height: widget.height,
+        color: widget.backgroundColor,
+        child: SvgPicture.asset(widget.uri, color: widget.color),
+      ),
     );
   }
 

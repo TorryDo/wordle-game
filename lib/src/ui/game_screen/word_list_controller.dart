@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:wordle_game/src/provider/annotation/description.dart';
 
 class WordListController extends GetxController {
   var charList = [].obs;
@@ -7,7 +6,8 @@ class WordListController extends GetxController {
   var _itemNumber = 0;
   var _currentPosition = 0;
 
-  final _defaultValue = '';
+
+  final _defaultValue = ' ';
 
   void initWordList(int itemNumber) {
     _itemNumber = itemNumber;
@@ -19,16 +19,16 @@ class WordListController extends GetxController {
   }
 
   void type(int ascii) {
+    /* A - Z */
     if (ascii >= 65 && ascii <= 90) {
-      /* A - Z */
       if (!isEndOfLine(charList.length, _currentPosition)) {
         charList[_currentPosition] = String.fromCharCode(ascii);
       } else {
         /* when current position not in the end of line */
         return;
       }
+      /* DEL */
     } else if (ascii == 127) {
-      /*DEL*/
       if (!isStartOfLine(charList.length, _currentPosition)) {
         charList[_currentPosition] = _defaultValue;
         _currentPosition--;
@@ -38,8 +38,8 @@ class WordListController extends GetxController {
 
         return;
       }
-    } else if (ascii == 10) {
       /* ENTER */
+    } else if (ascii == 10) {
       if (isEndOfLine(charList.length, _currentPosition)) {
         /* check if word exists in the words database*/
       } else {
@@ -51,9 +51,8 @@ class WordListController extends GetxController {
     _currentPosition++;
   }
 
-
   void reset() {
-    for(int i=0; i<getItemNumber; i++){
+    for (int i = 0; i < getItemNumber; i++) {
       charList[i] = _defaultValue;
     }
     _itemNumber = 0;
@@ -63,31 +62,30 @@ class WordListController extends GetxController {
   // -----------------------------
 
   bool isEndOfLine(int listSize, int currentPosition) {
+    if (currentPosition == 0) return false;
 
-    if(currentPosition == 0) return false;
-
-    if (listSize % currentPosition == 0 && currentPosition % 5 == 0) return true;
+    if (listSize % currentPosition == 0 && currentPosition % 5 == 0)
+      return true;
 
     return false;
   }
 
   bool isStartOfLine(int listSize, int currentPosition) {
+    if (currentPosition == 0) return true;
 
-    if(currentPosition == 0) return true;
-
-    if (listSize % currentPosition == 0 && currentPosition % 5 != 0) return true;
+    if (listSize % currentPosition == 0 && currentPosition % 5 != 0)
+      return true;
 
     return false;
   }
 
   // testing ----------------
 
-  get getItemNumber{
+  get getItemNumber {
     return _itemNumber;
   }
 
-  get getCurrentPosition{
+  get getCurrentPosition {
     return _currentPosition;
   }
-
 }

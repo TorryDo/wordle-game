@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wordle_game/src/res/dimens.dart';
-import 'package:wordle_game/src/res/tint.dart';
+import 'package:wordle_game/src/utils/res/tint.dart';
+
+import '../utils/res/dimens.dart';
 
 class TextStyles{
 
