@@ -14,7 +14,7 @@ void _testStartAndEndLine({int itemNumber = 30}) {
   test("find position without enter", () {
     controller.reset();
 
-    (() => controller.type(65)).repeat(5);
+    ((i) => controller.type(65)).repeat(5);
 
     print(controller.charList);
 
@@ -42,7 +42,7 @@ void _testStartAndEndLine({int itemNumber = 30}) {
   test("get complete word", (){
     controller.reset();
 
-    (() => controller.type(66)).repeat(5);
+    ((i) => controller.type(66)).repeat(5);
 
     print(controller.charList);
 

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
+import 'package:wordle_game/src/utils/extension.dart';
 
 /// be careful with "typeState.value = const InitialState();" in 'type' function
 ///
@@ -19,12 +20,10 @@ class WordListController extends GetxController {
     charList.value = List.filled(itemNumber, _defaultChar);
   }
 
-  void updateChar(String char, int index) {
-    charList[index] = char;
-  }
+  void updateChar(String char, int index) => charList[index] = char;
 
   void type(int ascii) {
-    /** A - Z **/
+    /// A - Z
     if (ascii >= 65 && ascii <= 90) {
       if (!_isEndOfWord(_wordLength, _currentPosition)) {
         int lastEmptyChar = _findLastEmptyChar();
@@ -34,12 +33,13 @@ class WordListController extends GetxController {
         _currentPosition++;
         typeState.value = TypingState(ascii: ascii);
       } else {
-        /** when the cursor in the end, do nothing */
+        /// when the cursor in the end, do nothing
         typeState.value = const InitialState();
         typeState.value = const TailOfWordState();
         return;
       }
-      /** DEL **/
+
+      /// DEL
     } else if (ascii == 127) {
       if (!_isStartOfWord(_currentPosition)) {
         charList[_findLastChar()] = _defaultChar;
@@ -48,15 +48,16 @@ class WordListController extends GetxController {
         typeState.value = const DeleteState();
         return;
       } else {
-        /** when the cursor in the start of word, do nothing */
+        /// when the cursor in the start of word, do nothing
         typeState.value = const InitialState();
         typeState.value = const HeadOfWordState();
         return;
       }
-      /** ENTER **/
+
+      /// ENTER
     } else if (ascii == 10) {
       if (_isEndOfWord(_wordLength, _currentPosition)) {
-        /** check if word exists in the words db file. if yes, reset currentPosition and find next char. if not, do nothing */
+        /// check if word exists in the words db file. if yes, reset currentPosition and find next char. if not, do nothing
         typeState.value = const InitialState();
         typeState.value = EnterState(
             word: _getCompleteWord(),
@@ -66,7 +67,7 @@ class WordListController extends GetxController {
               }
             });
       } else {
-        /** meaning not a suitable word. Need to complete the word */
+        /// meaning not a suitable word. Need to complete the word
         typeState.value = const InitialState();
         typeState.value = const WordNotCompleteState();
         return;
@@ -75,9 +76,9 @@ class WordListController extends GetxController {
   }
 
   void reset() {
-    for (int i = 0; i < getItemNumber; i++) {
+    (i) {
       charList[i] = _defaultChar;
-    }
+    }.repeat(_getItemNumber);
     _currentPosition = 0;
   }
 
@@ -85,37 +86,25 @@ class WordListController extends GetxController {
 
   int _findLastEmptyChar() => charList.indexOf(_defaultChar);
 
-  int _findLastChar() =>
-      charList.lastIndexWhere((element) => element != _defaultChar);
+  int _findLastChar() => charList.lastIndexWhere((c) => c != _defaultChar);
 
   String _getCompleteWord() {
-    /** when this function is called, last char is in the end of word */
+    /// when this function is called, last char is in the end of word
     int lastChar = _findLastChar();
     String result = '';
     for (int i = lastChar + 1 - _wordLength; i < lastChar + 1; i++) {
       result += charList[i];
     }
-
     return result;
   }
 
-  bool _isEndOfWord(int wordLength, int currentPosition) {
-    if (currentPosition == wordLength) return true;
+  bool _isEndOfWord(int wordLength, int position) => position == wordLength;
 
-    return false;
-  }
+  bool _isStartOfWord(int position) => position <= 0;
 
-  bool _isStartOfWord(int currentPosition) {
-    if (currentPosition <= 0) return true;
-
-    return false;
-  }
+  get _getItemNumber => charList.length;
 
   // testing -------------------------------------------------------------------
-
-  get getItemNumber => charList.length;
-
-  get getCurrentPosition => _currentPosition;
 
   get testFindLastEmptyChar => _findLastEmptyChar();
 
