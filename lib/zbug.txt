@@ -1,2 +1,4 @@
 -W: in game_screen.dart, when changing charNumber to another number using hot-reload, the item in
     the list still remains. you need to restart to see the change
+
+-E: in word_list_controller, if currentPosition range from 0-30, we cant know what is the head of 2nd word

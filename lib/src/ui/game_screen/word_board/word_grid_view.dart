@@ -38,7 +38,7 @@ class _WordGridViewState extends State<WordGridView> {
 
     _wordListController = Get.find<WordListController>();
 
-    _wordListController.initWordList(itemNumber);
+    _wordListController.initWordList(itemNumber, widget.wordLength);
   }
 
   @override
@@ -78,12 +78,8 @@ class _WordGridViewState extends State<WordGridView> {
   }
 
   void _onCharBoxClick(int index) {
-    // _logger.d("old value = ${_wordListController.charList[index]}");
-    //
-    // setState(() {
-    //   _wordListController.updateChar('X', index);
-    // });
-    //
-    // _logger.d("new value = ${_wordListController.charList[index]}");
+
+    _logger.d("click on grid view at position = $index");
+
   }
 }

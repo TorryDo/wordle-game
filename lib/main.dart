@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:wordle_game/di.dart';
 import 'package:wordle_game/src/provider/theme_provider.dart';
 import 'package:wordle_game/src/ui/game_screen/game_screen.dart';
 
 void main() {
+  di();
   runApp(const MyApp());
 }
 

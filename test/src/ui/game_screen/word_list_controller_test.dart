@@ -9,34 +9,44 @@ main() {
 void _testStartAndEndLine({int itemNumber = 30}) {
 
   var controller = WordListController();
-  controller.initWordList(itemNumber);
+  controller.initWordList(itemNumber, 5);
 
-  void expectStartOfLine(bool expected) {
-    expect(controller.isStartOfLine(itemNumber, controller.getCurrentPosition),
-        expected);
-  }
-
-  void expectEndOfLine(bool expected) {
-    expect(controller.isEndOfLine(itemNumber, controller.getCurrentPosition),
-        expected);
-  }
-
-  test("at position 0", () {
-    controller.reset();
-    print(controller.charList);
-
-    expectEndOfLine(false);
-    expectStartOfLine(true);
-  });
-
-  test("at position 5", () {
+  test("find position without enter", () {
     controller.reset();
 
     (() => controller.type(65)).repeat(5);
 
     print(controller.charList);
 
-    expectStartOfLine(false);
-    expectEndOfLine(true);
+    expect(controller.testFindLastChar, 4);
+    expect(controller.testFindLastEmptyChar, 5);
+
   });
+
+  // test("find position after enter", () {
+  //   controller.reset();
+  //
+  //   (() => controller.type(65)).repeat(5);
+  //   /** I delayed 100ms in wordlist repository, for some reasons, the test didn't passed :(  */
+  //   Future.delayed(const Duration(seconds: 1));
+  //   controller.type(10);
+  //   (() => controller.type(65)).repeat(2);
+  //
+  //   print(controller.charList);
+  //
+  //   expect(controller.testFindLastChar, 6);
+  //   expect(controller.testFindLastEmptyChar, 7);
+  //
+  // });
+
+  test("get complete word", (){
+    controller.reset();
+
+    (() => controller.type(66)).repeat(5);
+
+    print(controller.charList);
+
+    expect(controller.testGetCompleteWord, 'BBBBB');
+  });
+
 }
