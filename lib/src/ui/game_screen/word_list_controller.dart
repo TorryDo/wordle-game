@@ -1,19 +1,22 @@
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
+import 'package:wordle_game/src/ui/game_screen/word_board/word_state.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
-/// be careful with "typeState.value = const InitialState();" in 'type' function
+/// be careful with "typeState.value = const InitialState();" in 'type' func
 ///
 
 class WordListController extends GetxController {
-  final String _defaultChar = ' ';
-  var charList = [].obs;
-  Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
 
   var _wordLength = 0;
   var _currentPosition = 0;
 
-  final FAKE_WORD = 'YOUNG';
+  final String _defaultChar = ' ';
+  var charList = [].obs;
+  Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
+  Rx<WordState> wordState = Rx<WordState>(const InitialWordState());
+
+  WordListController();
 
   void initWordList(int itemNumber, int wordLength) {
     _wordLength = wordLength;
@@ -22,6 +25,7 @@ class WordListController extends GetxController {
 
   void updateChar(String char, int index) => charList[index] = char;
 
+  /// type from keyboard
   void type(int ascii) {
     /// A - Z
     if (ascii >= 65 && ascii <= 90) {
@@ -44,8 +48,8 @@ class WordListController extends GetxController {
       if (!_isStartOfWord(_currentPosition)) {
         charList[_findLastChar()] = _defaultChar;
         _currentPosition--;
-        typeState.value = const InitialState();
-        typeState.value = const DeleteState();
+        // typeState.value = const InitialState();
+        // typeState.value = const DeleteState();
         return;
       } else {
         /// when the cursor in the start of word, do nothing

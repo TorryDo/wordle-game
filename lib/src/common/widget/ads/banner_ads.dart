@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Ads extends StatefulWidget {
-  const Ads({Key? key}) : super(key: key);
+class BannerAds extends StatefulWidget {
+  const BannerAds({Key? key}) : super(key: key);
 
   @override
-  _AdsState createState() => _AdsState();
+  _BannerAdsState createState() => _BannerAdsState();
 }
 
-class _AdsState extends State<Ads> {
+class _BannerAdsState extends State<BannerAds> {
   @override
   Widget build(BuildContext context) {
     return _widget();

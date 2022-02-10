@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wordle_game/src/data_source/word_list/word_list_repository.dart';
 import 'package:wordle_game/src/ui/game_screen/action_bar/action_bar.dart';
-import 'package:wordle_game/src/ui/game_screen/ads/ads.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
@@ -11,6 +10,7 @@ import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
+import '../../common/widget/ads/banner_ads.dart';
 import '../../utils/constants.dart';
 
 class GameScreen extends StatefulWidget {
@@ -98,34 +98,32 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _ads() {
-    return const Ads();
+    return const BannerAds();
   }
 
   // private --------------------------------------------------------------
 
   void _observe() {
     controller?.typeState.stream.listen((event) {
-      if(event is TypingState){
+      if (event is TypingState) {
         _logger.d(event.toString());
-      }else if(event is TailOfWordState){
+      } else if (event is TailOfWordState) {
         _logger.d(event.toString());
-      }else if (event is EnterState) {
+      } else if (event is EnterState) {
         _validateWord(word: event.word, doWork: (b) => event.validateWord(b));
         _logger.d(event.toString());
-      }else if(event is WordNotCompleteState){
+      } else if (event is WordNotCompleteState) {
         _logger.d(event.toString());
-      }else if(event is DeleteState){
+      } else if (event is DeleteState) {
         _logger.d(event.toString());
-      }else if(event is HeadOfWordState){
+      } else if (event is HeadOfWordState) {
         _logger.d(event.toString());
       }
     });
   }
 
-  void _validateWord({
-    required String word,
-    required Function(bool b) doWork
-  }) async {
+  void _validateWord(
+      {required String word, required Function(bool b) doWork}) async {
     bool b = await wordListRepository.findWord(word);
     doWork(b);
   }

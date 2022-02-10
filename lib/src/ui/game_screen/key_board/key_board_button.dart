@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
+import 'package:wordle_game/src/ui/game_screen/key_board/char_state.dart';
 import '../../../utils/res/dimens.dart';
 
 class KeyBoardButton extends StatefulWidget {
@@ -8,6 +9,7 @@ class KeyBoardButton extends StatefulWidget {
   final String character;
   final Color? color;
   final Function(int ascii)? onClick;
+  final CharacterState characterState;
 
   const KeyBoardButton(
       {Key? key,
@@ -15,8 +17,9 @@ class KeyBoardButton extends StatefulWidget {
       this.width,
       this.height,
       this.color,
-      this.onClick})
-      : super(key: key);
+      this.onClick,
+      this.characterState = const InitialCharacterState()
+      }) : super(key: key);
 
   @override
   _KeyBoardButtonState createState() => _KeyBoardButtonState();

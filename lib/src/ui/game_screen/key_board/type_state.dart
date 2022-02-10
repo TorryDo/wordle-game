@@ -34,3 +34,4 @@ class HeadOfWordState extends TypeState {
 class WordNotCompleteState extends TypeState{
   const WordNotCompleteState();
 }
+
