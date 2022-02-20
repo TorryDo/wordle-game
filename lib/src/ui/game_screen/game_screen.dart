@@ -7,6 +7,7 @@ import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
 import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/word_controller.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
@@ -27,13 +28,17 @@ class _GameScreenState extends State<GameScreen> {
 
   final wordListRepository = GetIt.I.get<WordListRepository>();
 
-  WordListController? controller;
+  WordListController? _wordListController;
+  WordController? _wordController;
+
+  /// lifecycle ----------------------------------------------------------------
 
   @override
   void initState() {
     super.initState();
     Get.put(WordListController());
-    controller ??= Get.find<WordListController>();
+    _wordListController ??= Get.find<WordListController>();
+    _wordController ??= WordController();
     _observe();
   }
 
@@ -93,7 +98,7 @@ class _GameScreenState extends State<GameScreen> {
         alignment: Alignment.bottomCenter,
         child: KeyBoard(
           buttonColor: Colors.white10,
-          onClick: (ascii) => _onClickFromCustomKeyboard(ascii),
+          onClick: (ascii) => _onClickFromVirtualKeyboard(ascii),
         ));
   }
 
@@ -101,16 +106,20 @@ class _GameScreenState extends State<GameScreen> {
     return const BannerAds();
   }
 
-  // private --------------------------------------------------------------
+  /// private ------------------------------------------------------------------
 
   void _observe() {
-    controller?.typeState.stream.listen((event) {
+    _wordListController?.typingState.stream.listen((event) {
       if (event is TypingState) {
         _logger.d(event.toString());
       } else if (event is TailOfWordState) {
         _logger.d(event.toString());
       } else if (event is EnterState) {
-        _validateWord(word: event.word, doWork: (b) => event.validateWord(b));
+        _wordController?.validateWord(
+            word: event.word, result: (b) {
+              _logger.d("word = $b|");
+              event.isWordExist(b);
+        });
         _logger.d(event.toString());
       } else if (event is WordNotCompleteState) {
         _logger.d(event.toString());
@@ -122,18 +131,12 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
-  void _validateWord(
-      {required String word, required Function(bool b) doWork}) async {
-    bool b = await wordListRepository.findWord(word);
-    doWork(b);
-  }
-
   /* clicked on keyboard */
-  void _onClickFromCustomKeyboard(int ascii) {
+  void _onClickFromVirtualKeyboard(int ascii) {
     // _logger.d("from keyboard - " + String.fromCharCode(ascii));
 
-    controller ??= Get.find<WordListController>();
+    _wordListController ??= Get.find<WordListController>();
 
-    controller?.type(ascii);
+    _wordListController?.type(ascii);
   }
 }

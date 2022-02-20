@@ -1,24 +1,28 @@
+import 'dart:developer';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:wordle_game/src/data_source/word_list/vocab.dart';
 import 'package:wordle_game/src/data_source/word_list/word_list_db_impl.dart';
-import 'package:wordle_game/src/data_source/word_list/word_list_repository.dart';
+import 'package:wordle_game/src/data_source/word_list/word_list_repository_impl.dart';
 
 main() {
+  // WidgetsFlutterBinding.ensureInitialized();
   _validateIfWordExist();
 }
 
 void _validateIfWordExist() async {
 
-  final repo = WordListRepository(
-      wordListDatabase: WordListDataBaseImpl(
-          futureDatabase: openDatabase('assets/raws/words_567.db')));
+  // var repo = WordListRepositoryImpl(WordListDataBaseImpl());
 
-  test("validate word", () async {
+  var repo = WordListDataBaseImpl();
 
-    bool shouldTrue = await repo.findWord('hello');
-    bool shouldFalse = await repo.findWord('sdfhd');
+  test("test repo", () async{
+    Vocab? vocab = await repo.findWord("hello");
 
-    expect(shouldTrue, true);
-    expect(shouldFalse, false);
+    log(vocab.toString());
+
+    expect(false, true);
+
   });
+
 }

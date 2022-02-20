@@ -1,33 +1,33 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart';
 import 'package:wordle_game/src/data_source/word_list/vocab.dart';
 import 'package:wordle_game/src/data_source/word_list/word_list_db.dart';
 
 class WordListDataBaseImpl implements WordListDatabase {
 
-  final Future<Database> futureDatabase;
+  List<String> _wordsDB = [];
 
-  const WordListDataBaseImpl({required this.futureDatabase});
+  WordListDataBaseImpl() {
+    _loadFileToLocalList();
+  }
 
   @override
-  Future<Vocab?> findWord(String word) async{
+  Future<Vocab?> findWord(String word) async {
+    String w = _wordsDB.firstWhere((element) => element == word.toLowerCase());
 
-    final db = await futureDatabase;
-
-    final wordInLowerCase = word.toLowerCase();
-
-    final List<Map<String, dynamic>> maps = await db.query('words');
-
-    final list = List.generate(maps.length, (i) {
-      return Vocab(
-        title: maps[i]['word']
-      );
-    });
-
-    if(list.contains(wordInLowerCase)) {
-      return Vocab(title: word);
-    }
-
-    return null;
+    return Vocab(title: w);
   }
+
+  _loadFileToLocalList() async {
+    // if (_wordsDB.isNotEmpty) return;
+
+    String loadedText = await rootBundle.loadString('assets/raws/words_5.txt');
+
+    _wordsDB = loadedText.split('\r');
+
+  }
+
+  /// test ---------------------------------------------------------------------
+
+  get getWordsDB => _wordsDB;
 
 }

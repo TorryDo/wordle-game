@@ -4,7 +4,4 @@ class Vocab {
   final String? description;
 
   const Vocab({required this.title, this.type, this.description});
-
-
-
 }

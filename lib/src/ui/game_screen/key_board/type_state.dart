@@ -14,9 +14,9 @@ class TypingState extends TypeState {
 
 class EnterState extends TypeState {
   final String word;
-  final Function(bool isExist) validateWord;
+  final Function(bool isExist) isWordExist;
 
-  const EnterState({required this.word, required this.validateWord});
+  const EnterState({required this.word, required this.isWordExist});
 }
 
 class DeleteState extends TypeState {

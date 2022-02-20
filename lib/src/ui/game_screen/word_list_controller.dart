@@ -13,7 +13,7 @@ class WordListController extends GetxController {
 
   final String _defaultChar = ' ';
   var charList = [].obs;
-  Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
+  Rx<TypeState> typingState = Rx<TypeState>(const InitialState());
   Rx<WordState> wordState = Rx<WordState>(const InitialWordState());
 
   WordListController();
@@ -35,11 +35,11 @@ class WordListController extends GetxController {
 
         charList[lastEmptyChar] = String.fromCharCode(ascii);
         _currentPosition++;
-        typeState.value = TypingState(ascii: ascii);
+        typingState.value = TypingState(ascii: ascii);
       } else {
         /// when the cursor in the end, do nothing
-        typeState.value = const InitialState();
-        typeState.value = const TailOfWordState();
+        typingState.value = const InitialState();
+        typingState.value = const TailOfWordState();
         return;
       }
 
@@ -53,8 +53,8 @@ class WordListController extends GetxController {
         return;
       } else {
         /// when the cursor in the start of word, do nothing
-        typeState.value = const InitialState();
-        typeState.value = const HeadOfWordState();
+        typingState.value = const InitialState();
+        typingState.value = const HeadOfWordState();
         return;
       }
 
@@ -62,18 +62,18 @@ class WordListController extends GetxController {
     } else if (ascii == 10) {
       if (_isEndOfWord(_wordLength, _currentPosition)) {
         /// check if word exists in the words db file. if yes, reset currentPosition and find next char. if not, do nothing
-        typeState.value = const InitialState();
-        typeState.value = EnterState(
+        typingState.value = const InitialState();
+        typingState.value = EnterState(
             word: _getCompleteWord(),
-            validateWord: (isExist) {
+            isWordExist: (isExist) {
               if (isExist) {
                 _currentPosition = 0;
               }
             });
       } else {
         /// meaning not a suitable word. Need to complete the word
-        typeState.value = const InitialState();
-        typeState.value = const WordNotCompleteState();
+        typingState.value = const InitialState();
+        typingState.value = const WordNotCompleteState();
         return;
       }
     }
