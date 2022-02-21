@@ -55,7 +55,7 @@ class _WordGridViewState extends State<WordGridView> {
 
     return Container(
       width: double.infinity,
-      height: gridViewHeight,
+      height: gridViewHeight.abs(),
       color: widget.backgroundColor,
       child: Obx(
         () => GridView.builder(

@@ -6,8 +6,8 @@ import 'package:wordle_game/src/ui/game_screen/action_bar/action_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
-import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/word_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
@@ -106,7 +106,7 @@ class _GameScreenState extends State<GameScreen> {
     return const BannerAds();
   }
 
-  /// private ------------------------------------------------------------------
+  /// private func -------------------------------------------------------------
 
   void _observe() {
     _wordListController?.typingState.stream.listen((event) {
@@ -116,10 +116,11 @@ class _GameScreenState extends State<GameScreen> {
         _logger.d(event.toString());
       } else if (event is EnterState) {
         _wordController?.validateWord(
-            word: event.word, result: (b) {
+            word: event.word,
+            result: (b) {
               _logger.d("word = $b|");
               event.isWordExist(b);
-        });
+            });
         _logger.d(event.toString());
       } else if (event is WordNotCompleteState) {
         _logger.d(event.toString());

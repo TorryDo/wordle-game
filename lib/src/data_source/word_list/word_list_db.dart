@@ -4,4 +4,7 @@ abstract class WordListDatabase{
 
   Future<Vocab?> findWord(String word);
 
+  Future<bool> isWordExist(String word);
+
+
 }
