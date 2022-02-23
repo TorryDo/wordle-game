@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:wordle_game/src/data_source/word_list/vocab.dart';
@@ -20,7 +18,6 @@ class WordListDataBaseImpl implements WordListDatabase {
 
   @override
   Future<bool> isWordExist(String word) async {
-
     final wordInLowerCase = word.toLowerCase();
 
     String? output =

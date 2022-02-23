@@ -3,17 +3,29 @@ abstract class CharacterState{
 }
 
 class InitialCharacterState extends CharacterState{
-  const InitialCharacterState();
+
+  final String char;
+
+  const InitialCharacterState(this.char);
 }
 
 class RightCharacterRightPlaceState extends CharacterState{
-  const RightCharacterRightPlaceState();
+
+  final String char;
+
+  const RightCharacterRightPlaceState(this.char);
 }
 
 class RightCharacterWrongPlaceState extends CharacterState{
-  const RightCharacterWrongPlaceState();
+
+  final String char;
+
+  const RightCharacterWrongPlaceState(this.char);
 }
 
 class WrongCharacterState extends CharacterState{
-  const WrongCharacterState();
+
+  final String char;
+
+  const WrongCharacterState(this.char);
 }

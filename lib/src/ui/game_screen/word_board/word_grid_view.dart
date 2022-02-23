@@ -78,8 +78,6 @@ class _WordGridViewState extends State<WordGridView> {
   }
 
   void _onCharBoxClick(int index) {
-
     _logger.d("click on grid view at position = $index");
-
   }
 }

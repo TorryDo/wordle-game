@@ -7,9 +7,15 @@ class InitialWordState extends WordState{
 }
 
 class WrongWordState extends WordState{
-  const WrongWordState();
+
+  final Function(String wrongWord)? callback;
+
+  const WrongWordState(this.callback);
 }
 
 class RightWordState extends WordState{
-  const RightWordState();
+
+  final Function()? callback;
+
+  const RightWordState({this.callback});
 }

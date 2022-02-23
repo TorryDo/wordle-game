@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
-import 'package:wordle_game/src/ui/game_screen/key_board/char_state.dart';
+import 'package:wordle_game/src/ui/game_screen/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
+
 import '../../../utils/res/dimens.dart';
 
 class KeyBoardButton extends StatefulWidget {
@@ -18,8 +20,8 @@ class KeyBoardButton extends StatefulWidget {
       this.height,
       this.color,
       this.onClick,
-      this.characterState = const InitialCharacterState()
-      }) : super(key: key);
+      this.characterState = const InitialCharacterState(WordListController.defaultChar)})
+      : super(key: key);
 
   @override
   _KeyBoardButtonState createState() => _KeyBoardButtonState();
@@ -27,13 +29,11 @@ class KeyBoardButton extends StatefulWidget {
 
 class _KeyBoardButtonState extends State<KeyBoardButton> {
   @override
-  Widget build(BuildContext context) {
-    return _outer();
-  }
+  Widget build(BuildContext context) => _outer();
 
   Widget _outer() {
     var borderRadius = Dimens.BORDER_RADIUS_XS;
-    if(widget.width != null){
+    if (widget.width != null) {
       borderRadius = widget.width! / 6;
     }
 
@@ -42,10 +42,11 @@ class _KeyBoardButtonState extends State<KeyBoardButton> {
       child: Container(
         width: widget.width,
         height: widget.height,
-        child: _inner(),
         decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
+            color: _backgroundBox(),
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius))
+        ),
+        child: _inner(),
       ),
     );
   }
@@ -54,8 +55,14 @@ class _KeyBoardButtonState extends State<KeyBoardButton> {
     return Center(child: Text(widget.character, style: TextStyles.SIZE_S));
   }
 
+  /// logic --------------------------------------------------------------------
+
   void _onClick() {
-    if(widget.onClick == null) return;
+    if (widget.onClick == null) return;
     widget.onClick!(widget.character.codeUnitAt(0));
+  }
+
+  Color? _backgroundBox() {
+    return widget.color;
   }
 }

@@ -14,6 +14,11 @@ class WordListRepositoryImpl extends WordListRepository {
     return b;
   }
 
+  @override
+  Future<String> getRandomWord() async {
+    return "hello";
+  }
+
   /// test ---------------------------------------------------------------------
 
 }

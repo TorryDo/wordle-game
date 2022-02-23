@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_it/get_it.dart';
-import 'package:wordle_game/src/data_source/word_list/word_list_repository.dart';
 import 'package:wordle_game/src/ui/game_screen/action_bar/action_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
-import 'package:wordle_game/src/ui/game_screen/word_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 import 'package:wordle_game/src/utils/logger.dart';
@@ -26,10 +23,11 @@ class _GameScreenState extends State<GameScreen> {
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
       .setTag((GameScreen).toString());
 
-  final wordListRepository = GetIt.I.get<WordListRepository>();
+  // final wordListRepository = GetIt.I.get<WordListRepository>();
 
   WordListController? _wordListController;
-  WordController? _wordController;
+
+  // WordController? _wordController;
 
   /// lifecycle ----------------------------------------------------------------
 
@@ -38,7 +36,7 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     Get.put(WordListController());
     _wordListController ??= Get.find<WordListController>();
-    _wordController ??= WordController();
+    // _wordController ??= WordController();
     _observe();
   }
 
@@ -65,7 +63,7 @@ class _GameScreenState extends State<GameScreen> {
                 width: double.infinity,
                 height: actionBarHeight,
                 child: _actionBar()),
-            Flexible(flex: gridFlex, fit: FlexFit.tight, child: _gridView()),
+            Flexible(flex: gridFlex, fit: FlexFit.tight, child: _wordGridView()),
             Flexible(
                 flex: keyBoardFlex, fit: FlexFit.tight, child: _keyBoard()),
             SizedBox(
@@ -80,7 +78,7 @@ class _GameScreenState extends State<GameScreen> {
     return const ActionBar();
   }
 
-  Widget _gridView() {
+  Widget _wordGridView() {
     var screenWidth = getWidth(context);
     var marginHorizontal = 40.0;
     var wordGridViewWidth = screenWidth - marginHorizontal * 2;
@@ -109,27 +107,21 @@ class _GameScreenState extends State<GameScreen> {
   /// private func -------------------------------------------------------------
 
   void _observe() {
-    _wordListController?.typingState.stream.listen((event) {
-      if (event is TypingState) {
-        _logger.d(event.toString());
-      } else if (event is TailOfWordState) {
-        _logger.d(event.toString());
-      } else if (event is EnterState) {
-        _wordController?.validateWord(
-            word: event.word,
-            result: (b) {
-              _logger.d("word = $b|");
-              event.isWordExist(b);
-            });
-        _logger.d(event.toString());
-      } else if (event is WordNotCompleteState) {
-        _logger.d(event.toString());
-      } else if (event is DeleteState) {
-        _logger.d(event.toString());
-      } else if (event is HeadOfWordState) {
-        _logger.d(event.toString());
-      }
-    });
+    // _wordListController?.typingState.stream.listen((event) {
+    //   if (event is TypingState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is TailOfWordState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is EnterState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is WordNotCompleteState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is DeleteState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is HeadOfWordState) {
+    //     _logger.d(event.toString());
+    //   }
+    // });
   }
 
   /* clicked on keyboard */

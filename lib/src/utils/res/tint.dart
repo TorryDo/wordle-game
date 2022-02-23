@@ -10,4 +10,9 @@ class Tint{
 
   static const Color TEXT_COLOR_LIGHT = Colors.white;
 
+  static const Color GREEN_CHAR = Colors.green;
+  static const Color YELLOW_CHAR = Colors.yellow;
+  static const Color GREY_CHAR = Colors.blueGrey;
+
+
 }
