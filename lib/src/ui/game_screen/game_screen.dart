@@ -107,21 +107,21 @@ class _GameScreenState extends State<GameScreen> {
   /// private func -------------------------------------------------------------
 
   void _observe() {
-    // _wordListController?.typingState.stream.listen((event) {
-    //   if (event is TypingState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is TailOfWordState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is EnterState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is WordNotCompleteState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is DeleteState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is HeadOfWordState) {
-    //     _logger.d(event.toString());
-    //   }
-    // });
+    _wordListController?.typingState.stream.listen((event) {
+      if (event is TypingState) {
+        _logger.d(event.toString());
+      } else if (event is TailOfWordState) {
+        _logger.d(event.toString());
+      } else if (event is EnterState) {
+        _logger.d(event.toString());
+      } else if (event is WordNotCompleteState) {
+        _logger.d(event.toString());
+      } else if (event is DeleteState) {
+        _logger.d(event.toString());
+      } else if (event is HeadOfWordState) {
+        _logger.d(event.toString());
+      }
+    });
   }
 
   /* clicked on keyboard */

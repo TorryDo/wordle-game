@@ -9,14 +9,14 @@ main() {
 void _testStartAndEndLine({int itemNumber = 30}) {
 
   var controller = WordListController();
-  controller.initWordList(itemNumber, 5);
+  controller.init(itemNumber, 5);
 
   test("find position without enter", () {
-    controller.resetCharList();
+    controller.reset();
 
     ((i) => controller.type(65)).repeat(5);
 
-    print(controller.charList);
+    print(controller.gameBoardStateList);
 
     expect(controller.testFindLastChar, 4);
     expect(controller.testFindLastEmptyChar, 5);
@@ -40,11 +40,11 @@ void _testStartAndEndLine({int itemNumber = 30}) {
   // });
 
   test("get complete word", (){
-    controller.resetCharList();
+    controller.reset();
 
     ((i) => controller.type(66)).repeat(5);
 
-    print(controller.charList);
+    print(controller.gameBoardStateList);
 
     expect(controller.testGetCompleteWord, 'BBBBB');
   });

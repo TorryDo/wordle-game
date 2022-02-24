@@ -12,12 +12,12 @@ class WordController extends GetxController{
 
   Rx<WordState> wordState = Rx<WordState>(const InitialWordState());
 
-  void updateRandomWord({Function(bool)? wordReady}) async {
+  void setupTargetWord({Function(bool)? wordReady}) async {
     resultWord.value = await wordListRepository.getRandomWord();
     wordReady??(true);
   }
 
-  bool isMatchResultWord(String word){
+  bool isMatchTargetWord(String word){
     return word == resultWord.value;
   }
 

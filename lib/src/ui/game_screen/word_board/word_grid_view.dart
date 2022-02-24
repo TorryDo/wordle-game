@@ -38,7 +38,7 @@ class _WordGridViewState extends State<WordGridView> {
 
     _wordListController = Get.find<WordListController>();
 
-    _wordListController.initWordList(itemNumber, widget.wordLength);
+    _wordListController.init(itemNumber, widget.wordLength);
   }
 
   @override
@@ -59,7 +59,7 @@ class _WordGridViewState extends State<WordGridView> {
       color: widget.backgroundColor,
       child: Obx(
         () => GridView.builder(
-            itemCount: _wordListController.charList.length,
+            itemCount: _wordListController.gameBoardStateList.length,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: charNumber,
@@ -68,7 +68,7 @@ class _WordGridViewState extends State<WordGridView> {
             itemBuilder: (context, index) => CharBox(
                   index: index,
                   boxSize: charBoxSize,
-                  character: _wordListController.charList[index],
+                  character: _wordListController.gameBoardStateList[index].char,
                   onClick: (index) {
                     _onCharBoxClick(index);
                   },
