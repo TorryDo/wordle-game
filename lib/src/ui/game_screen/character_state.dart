@@ -19,3 +19,4 @@ class RightCharacterWrongPlaceState extends CharacterState {
 class WrongCharacterState extends CharacterState {
   const WrongCharacterState(String char) : super(char);
 }
+

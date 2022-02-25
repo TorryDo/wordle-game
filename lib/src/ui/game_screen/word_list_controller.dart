@@ -1,98 +1,118 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/type_state.dart';
+import 'package:wordle_game/src/ui/game_screen/word_board/word_list_controller_support.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_state.dart';
 import 'package:wordle_game/src/ui/game_screen/word_controller.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
-/// be careful with "typeState.value = const InitialState();" in 'type' func
+class WordListController extends WordController with WordListControllerSupport {
+  static const String emptyChar = ' ';
 
-class WordListController extends WordController {
-  static const String defaultChar = ' ';
-  var _wordLength = 0;
-  var _currentPosition = 0;
+  var _currentPositionInWord = 0;
 
   RxList<CharacterState> gameBoardStateList = RxList<CharacterState>();
-
-  Rx<TypeState> typingState = Rx<TypeState>(const InitialState());
+  Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
 
   WordListController() {
     /// check if previous game still be there
-    super.setupTargetWord(wordReady: (p0) => null);
+
+    log("setupTargetWord");
+    super.setupTargetWord();
   }
 
   // func ----------------------------------------------------------------------
 
   void init(int itemNumber, int wordLength) {
-    _wordLength = wordLength;
+    this.wordLength = wordLength;
     gameBoardStateList.value =
-        List.filled(itemNumber, const InitialCharacterState(defaultChar));
-  }
-
-  @Deprecated("unImplemented")
-  void updateChar(String char, int index) {
-    // charList[index] = char;
+        List.filled(itemNumber, const InitialCharacterState(emptyChar));
   }
 
   // get callback from keyboard widget
   void type(int ascii) {
-    /// 3 types of input
+    /// 3 input types
     void _inputAtoZ() {
-      if (!_isEndOfWord(_wordLength, _currentPosition)) {
+      if (!_isEndOfWord(wordLength, _currentPositionInWord)) {
         int lastEmptyChar = _findLastEmptyCharPosition();
         if (lastEmptyChar < 0) return;
 
         gameBoardStateList[lastEmptyChar] =
             InitialCharacterState(String.fromCharCode(ascii));
-        _currentPosition++;
-        typingState.value = TypingState(ascii: ascii);
+
+        typeState.value = TypingState(ascii: ascii);
+
+        _currentPositionInWord++;
       } else {
         // when the cursor in the end, do nothing
-        typingState.value = const InitialState();
-        typingState.value = const TailOfWordState();
+        _updateTypingState(const TailOfWordState());
         return;
       }
     }
 
     void _inputDelete() {
-      if (!_isStartOfWord(_currentPosition)) {
+      if (!_isStartOfWord(_currentPositionInWord)) {
         gameBoardStateList[_findLastCharPosition()] =
-            const InitialCharacterState(defaultChar);
-        _currentPosition--;
-        // typeState.value = const InitialState();
-        // typeState.value = const DeleteState();
+            const InitialCharacterState(emptyChar);
+        _currentPositionInWord--;
+        _updateTypingState(const DeleteState());
         return;
       } else {
         // when the cursor in the start of word, do nothing
-        typingState.value = const InitialState();
-        typingState.value = const HeadOfWordState();
+        _updateTypingState(const HeadOfWordState());
         return;
       }
     }
 
     void _inputEnter() {
-      if (_isEndOfWord(_wordLength, _currentPosition)) {
+      if (_isEndOfWord(wordLength, _currentPositionInWord)) {
         // check if word exists in the words db file. if yes, reset currentPosition and find next char. if not, do nothing
-        typingState.value = const InitialState();
-        typingState.value = EnterState(word: _getCompleteWord());
 
-        if (super.isMatchTargetWord(_getCompleteWord())) {
+        final tempInputCompletedWord = _getCompleteWord();
+
+        _updateTypingState(EnterState(word: tempInputCompletedWord));
+
+        if (super.isMatchedTargetWord(tempInputCompletedWord)) {
           /// YOU WIN THIS GAME
 
-          super.wordState.value = const InitialWordState();
-          super.wordState.value = const RightWordState();
+          (position) {
+            _updateToRightCharRightPlaceState(position);
+          }.loop(_currentPositionInWord, _currentPositionInWord - wordLength);
+
+          super.updateWordState(const RightWordState());
           return;
         }
 
-        super.isExistWord(_getCompleteWord(), (isCorrect) {
+        super.isExistWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
-            _currentPosition = 0;
+            final statusList = getCharactersStatusInWord(
+                targetWord.value, tempInputCompletedWord);
+
+            final tempLastChar = _findLastCharPosition();
+
+            for (int i = 0; i < wordLength; i++) {
+              if (statusList[i] ==
+                  WordListControllerSupport.RIGHT_CHAR_RIGHT_PLACE) {
+                _updateToRightCharRightPlaceState(
+                    tempLastChar - wordLength + 1 + i);
+              } else if (statusList[i] ==
+                  WordListControllerSupport.WRONG_CHAR) {
+                _updateToWrongCharState(tempLastChar - wordLength + 1 + i);
+              } else if (statusList[i] ==
+                  WordListControllerSupport.RIGHT_CHAR_WRONG_PLACE) {
+                _updateToRightCharWrongPlaceState(
+                    tempLastChar - wordLength + 1 + i);
+              }
+            }
+
+            _currentPositionInWord = 0;
           }
         });
       } else {
         // meaning not a suitable word. Need to complete the word
-        typingState.value = const InitialState();
-        typingState.value = const WordNotCompleteState();
+        _updateTypingState(const WordNotCompletedState());
         return;
       }
     }
@@ -106,28 +126,26 @@ class WordListController extends WordController {
     }
   }
 
-  void reset() {
+  void resetTheGame() {
     (i) {
-      gameBoardStateList[i] = const InitialCharacterState(defaultChar);
-    }.repeat(_getItemNumber);
-    _currentPosition = 0;
+      gameBoardStateList[i] = const InitialCharacterState(emptyChar);
+    }.repeat(_getGameBoardItemNumber);
+    _currentPositionInWord = 0;
   }
 
   // private -------------------------------------------------------------------
 
   int _findLastEmptyCharPosition() =>
-      gameBoardStateList.indexWhere((c) => c.char == defaultChar);
-
-  // int _findLastEmptyCharPosition() => charList.indexOf(defaultChar);
+      gameBoardStateList.indexWhere((c) => c.char == emptyChar);
 
   int _findLastCharPosition() =>
-      gameBoardStateList.lastIndexWhere((c) => c.char != defaultChar);
+      gameBoardStateList.lastIndexWhere((c) => c.char != emptyChar);
 
   String _getCompleteWord() {
     /// when this function is called, last char is in the end of word
-    int lastChar = _findLastCharPosition();
+    final lastChar = _findLastCharPosition();
     String result = '';
-    for (int i = lastChar + 1 - _wordLength; i < lastChar + 1; i++) {
+    for (int i = lastChar + 1 - wordLength; i < lastChar + 1; i++) {
       result += gameBoardStateList[i].char;
     }
     return result;
@@ -137,7 +155,27 @@ class WordListController extends WordController {
 
   bool _isStartOfWord(int position) => position <= 0;
 
-  get _getItemNumber => gameBoardStateList.length;
+  void _updateTypingState(TypeState newTypeState) {
+    typeState.value = const InitialState();
+    typeState.value = newTypeState;
+  }
+
+  void _updateToWrongCharState(int position) {
+    final tempChar = gameBoardStateList[position].char;
+    gameBoardStateList[position] = WrongCharacterState(tempChar);
+  }
+
+  void _updateToRightCharRightPlaceState(int position) {
+    final tempChar = gameBoardStateList[position].char;
+    gameBoardStateList[position] = RightCharacterRightPlaceState(tempChar);
+  }
+
+  void _updateToRightCharWrongPlaceState(int position) {
+    final tempChar = gameBoardStateList[position].char;
+    gameBoardStateList[position] = RightCharacterWrongPlaceState(tempChar);
+  }
+
+  get _getGameBoardItemNumber => gameBoardStateList.length;
 
   // testing -------------------------------------------------------------------
 
@@ -146,4 +184,6 @@ class WordListController extends WordController {
   get testFindLastChar => _findLastCharPosition();
 
   get testGetCompleteWord => _getCompleteWord();
+
+  get getTargetWord => targetWord.value;
 }

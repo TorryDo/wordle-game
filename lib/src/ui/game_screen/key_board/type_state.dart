@@ -30,7 +30,7 @@ class HeadOfWordState extends TypeState {
   const HeadOfWordState();
 }
 
-class WordNotCompleteState extends TypeState{
-  const WordNotCompleteState();
+class WordNotCompletedState extends TypeState{
+  const WordNotCompletedState();
 }
 

@@ -2,32 +2,29 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/ui/game_screen/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
 import 'package:wordle_game/src/utils/res/tint.dart';
 
 class CharBox extends StatefulWidget {
   final int index;
 
+  final CharacterState characterState;
   final double boxSize;
-  final String character;
   final double borderSize;
   final Color borderColor;
   final double borderRadius;
   final double fontSize;
-  final CharacterState characterState;
 
   final Function(int index)? onClick;
 
   const CharBox(
       {Key? key,
       required this.boxSize,
-      required this.character,
+      required this.characterState,
       this.index = -1,
       this.borderSize = 2.0,
       this.borderColor = Tint.main_color,
       this.borderRadius = 7.0,
       this.fontSize = 40.0,
-      this.characterState = const InitialCharacterState(WordListController.defaultChar),
       this.onClick})
       : super(key: key);
 
@@ -54,12 +51,12 @@ class _CharBoxState extends State<CharBox> {
             decoration: BoxDecoration(
                 color: _getBackgroundColor(),
                 border: Border.all(
-                    color: widget.borderColor, width: _getBoxBorderSize()),
+                    color: _getBorderColor(), width: _getBoxBorderSize()),
                 borderRadius:
                     BorderRadius.all(Radius.circular(widget.borderRadius))),
             child: Center(
               child: Text(
-                widget.character,
+                widget.characterState.char,
                 style: TextStyle(
                     fontSize: widget.fontSize, fontWeight: fontWeight),
               ),
@@ -76,7 +73,7 @@ class _CharBoxState extends State<CharBox> {
     if (widget.onClick != null) {
       widget.onClick!(widget.index);
     }
-    log("widget.character = ${widget.character}");
+    log("widget.character = ${widget.characterState.char}");
   }
 
   double _getBoxBorderSize() {
@@ -84,6 +81,13 @@ class _CharBoxState extends State<CharBox> {
       return widget.borderSize;
     }
     return 0.0;
+  }
+
+  Color _getBorderColor(){
+    if (widget.characterState is InitialCharacterState) {
+      return widget.borderColor;
+    }
+    return Colors.transparent;
   }
 
   Color _getBackgroundColor() {

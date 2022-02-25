@@ -8,19 +8,19 @@ import '../../../utils/res/dimens.dart';
 class KeyBoardButton extends StatefulWidget {
   final double? width;
   final double? height;
-  final String character;
+  final String keyboardCharacter;
   final Color? color;
   final Function(int ascii)? onClick;
   final CharacterState characterState;
 
   const KeyBoardButton(
       {Key? key,
-      this.character = '',
+      this.keyboardCharacter = '',
       this.width,
       this.height,
       this.color,
       this.onClick,
-      this.characterState = const InitialCharacterState(WordListController.defaultChar)})
+      this.characterState = const InitialCharacterState(WordListController.emptyChar)})
       : super(key: key);
 
   @override
@@ -52,14 +52,14 @@ class _KeyBoardButtonState extends State<KeyBoardButton> {
   }
 
   Widget _inner() {
-    return Center(child: Text(widget.character, style: TextStyles.SIZE_S));
+    return Center(child: Text(widget.keyboardCharacter, style: TextStyles.SIZE_S));
   }
 
   /// logic --------------------------------------------------------------------
 
   void _onClick() {
     if (widget.onClick == null) return;
-    widget.onClick!(widget.character.codeUnitAt(0));
+    widget.onClick!(widget.keyboardCharacter.codeUnitAt(0));
   }
 
   Color? _backgroundBox() {

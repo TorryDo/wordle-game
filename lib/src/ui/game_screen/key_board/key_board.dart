@@ -71,7 +71,7 @@ class _KeyBoardState extends State<KeyBoard> {
             KeyBoardButton(
               width: _buttonWidth,
               height: _buttonHeight,
-              character: char,
+              keyboardCharacter: char,
               color: widget.buttonColor,
               onClick: widget.onClick,
             )
@@ -93,7 +93,7 @@ class _KeyBoardState extends State<KeyBoard> {
             KeyBoardButton(
               width: _buttonWidth,
               height: _buttonHeight,
-              character: char,
+              keyboardCharacter: char,
               color: widget.buttonColor,
               onClick: widget.onClick,
             )
@@ -129,7 +129,7 @@ class _KeyBoardState extends State<KeyBoard> {
             KeyBoardButton(
               width: _buttonWidth,
               height: _buttonHeight,
-              character: char,
+              keyboardCharacter: char,
               color: widget.buttonColor,
               onClick: widget.onClick,
             ),
