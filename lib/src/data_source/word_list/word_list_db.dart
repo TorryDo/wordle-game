@@ -6,5 +6,7 @@ abstract class WordListDatabase{
 
   Future<bool> isWordExist(String word);
 
+  Future<String> getRandomWord();
+
 
 }

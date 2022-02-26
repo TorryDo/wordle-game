@@ -8,6 +8,7 @@ class Tint{
 
   static const Color button_color = Colors.blueGrey;
 
+  static const Color TEXT_COLOR = Colors.black87;
   static const Color TEXT_COLOR_LIGHT = Colors.white;
 
   static const Color GREEN_CHAR = Colors.green;

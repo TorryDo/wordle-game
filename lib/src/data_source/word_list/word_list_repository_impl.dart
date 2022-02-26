@@ -6,17 +6,16 @@ class WordListRepositoryImpl extends WordListRepository {
 
   WordListRepositoryImpl(this.wordListDatabase);
 
-  /// impl ---------------------------------------------------------------------
+  /// override -----------------------------------------------------------------
 
   @override
-  Future<bool> isWordExist(String word) async {
-    final b = await wordListDatabase.isWordExist(word);
-    return b;
+  Future<bool> isWordExist(String word) {
+    return wordListDatabase.isWordExist(word);
   }
 
   @override
-  Future<String> getRandomWord() async {
-    return "arena";
+  Future<String> getRandomWord() {
+    return wordListDatabase.getRandomWord();
   }
 
   /// test ---------------------------------------------------------------------

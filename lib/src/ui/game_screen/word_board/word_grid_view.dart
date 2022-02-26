@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/char_box.dart';
-import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 import 'package:wordle_game/src/utils/constants.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
@@ -40,7 +38,7 @@ class _WordGridViewState extends State<WordGridView> {
 
     _wordListController = Get.find<WordListController>();
 
-    _wordListController.init(itemNumber, widget.wordLength);
+    _wordListController.setupTheGame(itemNumber, widget.wordLength);
   }
 
   @override
@@ -72,8 +70,6 @@ class _WordGridViewState extends State<WordGridView> {
                   boxSize: charBoxSize,
                   onClick: (index) {
                     _onCharBoxClick(index);
-                    log(_wordListController.gameBoardStateList.toString());
-                    // log(_wordListController.getTargetWord);
                   },
                 )),
       ),

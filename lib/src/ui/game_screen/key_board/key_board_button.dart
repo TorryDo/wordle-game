@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
-import 'package:wordle_game/src/ui/game_screen/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/word_list_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 
 import '../../../utils/res/dimens.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:wordle_game/src/ui/game_screen/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
 import 'package:wordle_game/src/utils/res/tint.dart';
 
 class CharBox extends StatefulWidget {
@@ -58,7 +58,9 @@ class _CharBoxState extends State<CharBox> {
               child: Text(
                 widget.characterState.char,
                 style: TextStyle(
-                    fontSize: widget.fontSize, fontWeight: fontWeight),
+                    color: _getTextColor(),
+                    fontSize: widget.fontSize,
+                    fontWeight: fontWeight),
               ),
             ),
           ),
@@ -83,7 +85,7 @@ class _CharBoxState extends State<CharBox> {
     return 0.0;
   }
 
-  Color _getBorderColor(){
+  Color _getBorderColor() {
     if (widget.characterState is InitialCharacterState) {
       return widget.borderColor;
     }
@@ -98,5 +100,13 @@ class _CharBoxState extends State<CharBox> {
     }
 
     return Colors.transparent;
+  }
+
+  Color _getTextColor() {
+    if (widget.characterState is RightCharacterWrongPlaceState) {
+      return Tint.TEXT_COLOR;
+    }
+
+    return Tint.TEXT_COLOR_LIGHT;
   }
 }
