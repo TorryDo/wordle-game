@@ -1,17 +1,17 @@
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/word_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_state_listener.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
 class WordListController extends WordController {
   static const String emptyChar = ' ';
   var _currentPositionInWord = 0;
-  WordStateListener? wordStateListener;
 
   RxList<CharacterState> gameBoardStateList = RxList<CharacterState>();
   Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
+  Rx<GameState> gameState = Rx<GameState>(const InitialGameState());
 
   WordListController() {
     /// check if previous game still be there
@@ -20,10 +20,6 @@ class WordListController extends WordController {
   }
 
   // func ----------------------------------------------------------------------
-
-  void addWordStateListener(WordStateListener wordStateListener) {
-    this.wordStateListener = wordStateListener;
-  }
 
   void setupTheGame(int itemNumber, int wordLength) {
     this.wordLength = wordLength;
@@ -66,25 +62,14 @@ class WordListController extends WordController {
       }
     }
 
+    /*
+     * check if word exists in the words db file.
+     * if yes, reset currentPosition and find next char. if not, do nothing
+     *
+     */
     void _inputEnter() {
       if (isEndOfWord(wordLength, _currentPositionInWord)) {
-        // check if word exists in the words db file. if yes, reset currentPosition and find next char. if not, do nothing
-
-
         final tempInputCompletedWord = _getCompleteWord();
-
-        _notifyTypingState(EnterState(word: tempInputCompletedWord));
-
-        if (super.isMatchedTargetWord(tempInputCompletedWord)) {
-          /// YOU WIN THIS GAME
-
-          (position) {
-            _notifyToRightCharRightPlaceState(position);
-          }.loop(_findLastCharPosition(), _findLastCharPosition() - wordLength);
-
-          wordStateListener!.onCorrectWord();
-          return;
-        }
 
         super.isExistWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
@@ -107,8 +92,20 @@ class WordListController extends WordController {
             }
 
             _currentPositionInWord = 0;
+
+            _notifyTypingState(EnterState(
+                wordStates: gameBoardStateList.sublist(
+                    _findLastCharPosition() - wordLength + 1,
+                    _findLastCharPosition() + 1)));
+
+            if (super.isMatchedTargetWord(tempInputCompletedWord)) {
+              /// YOU WIN THIS GAME
+
+              gameState.value = const InitialGameState();
+              gameState.value = const EndGameState(hasWon: true);
+            }
           } else {
-            wordStateListener!.onWrongWord();
+            _notifyTypingState(const WrongWordState());
           }
         });
       } else {
@@ -132,6 +129,7 @@ class WordListController extends WordController {
       gameBoardStateList[i] = const InitialCharacterState(emptyChar);
     }.repeat(gameBoardStateList.length);
     _currentPositionInWord = 0;
+    super.setupTargetWord();
   }
 
   // private -------------------------------------------------------------------
@@ -164,21 +162,11 @@ class WordListController extends WordController {
 
   void _notifyToRightCharRightPlaceState(int position) {
     final tempChar = gameBoardStateList[position].char;
-    gameBoardStateList[position] = RightCharacterRightPlaceState(tempChar);
+    gameBoardStateList[position] = RightCharacterRightPositionState(tempChar);
   }
 
   void _notifyToRightCharWrongPlaceState(int position) {
     final tempChar = gameBoardStateList[position].char;
-    gameBoardStateList[position] = RightCharacterWrongPlaceState(tempChar);
+    gameBoardStateList[position] = RightCharacterWrongPositionState(tempChar);
   }
-
-  // testing -------------------------------------------------------------------
-
-  get testFindLastEmptyChar => _findLastEmptyCharPosition();
-
-  get testFindLastChar => _findLastCharPosition();
-
-  get testGetCompleteWord => _getCompleteWord();
-
-  get getTargetWord => targetWord.value;
 }

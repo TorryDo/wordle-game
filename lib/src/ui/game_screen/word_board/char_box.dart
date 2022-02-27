@@ -34,7 +34,9 @@ class CharBox extends StatefulWidget {
 
 class _CharBoxState extends State<CharBox> {
   @override
-  Widget build(BuildContext context) => _charBox(widget.boxSize);
+  Widget build(BuildContext context) {
+    return _charBox(widget.boxSize);
+  }
 
   Widget _charBox(
     double boxSize,
@@ -93,9 +95,9 @@ class _CharBoxState extends State<CharBox> {
   }
 
   Color _getBackgroundColor() {
-    if (widget.characterState is RightCharacterRightPlaceState) {
+    if (widget.characterState is RightCharacterRightPositionState) {
       return Tint.GREEN_CHAR;
-    } else if (widget.characterState is RightCharacterWrongPlaceState) {
+    } else if (widget.characterState is RightCharacterWrongPositionState) {
       return Tint.YELLOW_CHAR;
     }
 
@@ -103,7 +105,7 @@ class _CharBoxState extends State<CharBox> {
   }
 
   Color _getTextColor() {
-    if (widget.characterState is RightCharacterWrongPlaceState) {
+    if (widget.characterState is RightCharacterWrongPositionState) {
       return Tint.TEXT_COLOR;
     }
 

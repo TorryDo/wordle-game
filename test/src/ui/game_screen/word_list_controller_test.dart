@@ -18,8 +18,6 @@ void _testStartAndEndLine({int itemNumber = 30}) {
 
     print(controller.gameBoardStateList);
 
-    expect(controller.testFindLastChar, 4);
-    expect(controller.testFindLastEmptyChar, 5);
 
   });
 
@@ -31,7 +29,6 @@ void _testStartAndEndLine({int itemNumber = 30}) {
 
     print(controller.gameBoardStateList);
 
-    expect(controller.testGetCompleteWord, 'BBBBB');
   });
 
 }

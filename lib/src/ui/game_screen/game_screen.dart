@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/type_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_state_listener.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
@@ -19,16 +18,12 @@ class GameScreen extends StatefulWidget {
   _GameScreenState createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> implements WordStateListener {
+class _GameScreenState extends State<GameScreen> {
   final _logger = Logger()
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
       .setTag((GameScreen).toString());
 
-  // final wordListRepository = GetIt.I.get<WordListRepository>();
-
   WordListController? _wordListController;
-
-  // WordController? _wordController;
 
   /// lifecycle ----------------------------------------------------------------
 
@@ -37,7 +32,6 @@ class _GameScreenState extends State<GameScreen> implements WordStateListener {
     super.initState();
     Get.put(WordListController());
     _wordListController ??= Get.find<WordListController>();
-    _wordListController?.addWordStateListener(this);
     _observe();
   }
 
@@ -109,19 +103,28 @@ class _GameScreenState extends State<GameScreen> implements WordStateListener {
   /// private func -------------------------------------------------------------
 
   void _observe() {
-    _wordListController?.typeState.stream.listen((event) {
-      if (event is TypingState) {
-        _logger.d(event.toString());
-      } else if (event is TailOfWordState) {
-        _logger.d(event.toString());
-      } else if (event is EnterState) {
-        _logger.d(event.toString());
-      } else if (event is WordNotCompletedState) {
-        _logger.d(event.toString());
-      } else if (event is DeleteState) {
-        _logger.d(event.toString());
-      } else if (event is HeadOfWordState) {
-        _logger.d(event.toString());
+    // _wordListController?.typeState.stream.listen((event) {
+    //   if (event is TypingState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is TailOfWordState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is EnterState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is WordNotCompletedState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is DeleteState) {
+    //     _logger.d(event.toString());
+    //   } else if (event is HeadOfWordState) {
+    //     _logger.d(event.toString());
+    //   }
+    // });
+
+    _wordListController?.gameState.stream.listen((gameState) {
+      if (gameState is EndGameState) {
+        if (gameState.hasWon) {
+          Future.delayed(
+              const Duration(seconds: 2), _wordListController?.resetTheGame);
+        }
       }
     });
   }
@@ -133,18 +136,5 @@ class _GameScreenState extends State<GameScreen> implements WordStateListener {
     _wordListController ??= Get.find<WordListController>();
 
     _wordListController?.type(ascii);
-  }
-
-  // override ------------------------------------------------------------------
-
-  @override
-  void onCorrectWord() {
-    Future.delayed(
-        const Duration(seconds: 2), _wordListController?.resetTheGame);
-  }
-
-  @override
-  void onWrongWord() {
-    _logger.d("wrong word");
   }
 }

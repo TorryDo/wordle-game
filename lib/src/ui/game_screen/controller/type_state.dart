@@ -1,3 +1,5 @@
+import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
+
 abstract class TypeState {
   const TypeState();
 }
@@ -13,9 +15,9 @@ class TypingState extends TypeState {
 }
 
 class EnterState extends TypeState {
-  final String word;
+  final List<CharacterState> wordStates;
 
-  const EnterState({required this.word});
+  const EnterState({required this.wordStates});
 }
 
 class DeleteState extends TypeState {
@@ -33,4 +35,9 @@ class HeadOfWordState extends TypeState {
 class WordNotCompletedState extends TypeState{
   const WordNotCompletedState();
 }
+
+class WrongWordState extends TypeState{
+  const WrongWordState();
+}
+
 

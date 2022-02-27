@@ -1,27 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 
 import '../../../utils/res/dimens.dart';
+import '../../../utils/res/tint.dart';
 
 class KeyBoardButton extends StatefulWidget {
+
+  final CharacterState characterState;
   final double? width;
   final double? height;
-  final String keyboardCharacter;
   final Color? color;
   final Function(int ascii)? onClick;
-  final CharacterState characterState;
 
-  const KeyBoardButton(
-      {Key? key,
-      this.keyboardCharacter = '',
-      this.width,
-      this.height,
-      this.color,
-      this.onClick,
-      this.characterState = const InitialCharacterState(WordListController.emptyChar)})
-      : super(key: key);
+
+  const KeyBoardButton({
+    Key? key,
+    required this.characterState,
+    this.width,
+    this.height,
+    this.color,
+    this.onClick,
+  }) : super(key: key);
 
   @override
   _KeyBoardButtonState createState() => _KeyBoardButtonState();
@@ -43,26 +45,45 @@ class _KeyBoardButtonState extends State<KeyBoardButton> {
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-            color: _backgroundBox(),
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius))
-        ),
+            color: _getBackgroundColor(),
+            borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: _inner(),
       ),
     );
   }
 
   Widget _inner() {
-    return Center(child: Text(widget.keyboardCharacter, style: TextStyles.SIZE_S));
+    return Center(
+        child: Text(widget.characterState.char,
+            style: TextStyle(
+                color: _getTextColor(),
+                fontSize: Dimens.text_size_normal,
+                fontWeight: TextStyles.font_weight_medium)));
   }
 
   /// logic --------------------------------------------------------------------
 
   void _onClick() {
     if (widget.onClick == null) return;
-    widget.onClick!(widget.keyboardCharacter.codeUnitAt(0));
+    widget.onClick!(widget.characterState.char.codeUnitAt(0));
   }
 
-  Color? _backgroundBox() {
+  Color? _getBackgroundColor() {
+    if (widget.characterState is RightCharacterRightPositionState) {
+      return Tint.GREEN_CHAR;
+    } else if (widget.characterState is RightCharacterWrongPositionState) {
+      return Tint.YELLOW_CHAR;
+    }else if(widget.characterState is WrongCharacterState){
+      return Colors.transparent;
+    }
     return widget.color;
+  }
+
+  Color _getTextColor() {
+    if (widget.characterState is RightCharacterWrongPositionState) {
+      return Tint.TEXT_COLOR;
+    }
+
+    return Tint.TEXT_COLOR_LIGHT;
   }
 }

@@ -14,15 +14,5 @@ void _validateIfWordExist() async {
 
   // var repo = WordListRepositoryImpl(WordListDataBaseImpl());
 
-  var repo = WordListDataBaseImpl();
-
-  test("test repo", () async{
-    Vocab? vocab = await repo.findWord("hello");
-
-    log(vocab.toString());
-
-    expect(false, true);
-
-  });
 
 }

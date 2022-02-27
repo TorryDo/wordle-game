@@ -7,12 +7,12 @@ import 'package:get/get.dart';
 import 'package:wordle_game/src/data_source/word_list/vocab.dart';
 import 'package:wordle_game/src/data_source/word_list/word_list_db.dart';
 
+import '../../common/class/list_notifier.dart';
+
 class WordListDataBaseImpl implements WordListDatabase {
-  // List<String> _wordsDB = [];
+  final ListNotifier<String> _wordCollection = ListNotifier();
 
-  final ListNotifier<String> _wordsDbObs = ListNotifier();
-
-  Random random = Random();
+  final Random random = Random();
 
   WordListDataBaseImpl() {
     _loadFileToLocalList();
@@ -28,7 +28,7 @@ class WordListDataBaseImpl implements WordListDatabase {
   Future<bool> isWordExist(String word) async {
     final wordInLowerCase = word.toLowerCase();
 
-    String? output = _wordsDbObs.value
+    String? output = _wordCollection.value
         .firstWhereOrNull((element) => element == wordInLowerCase);
 
     return output != null;
@@ -36,17 +36,21 @@ class WordListDataBaseImpl implements WordListDatabase {
 
   @override
   Future<String> getRandomWord() async {
-    if (_wordsDbObs.value.isNotEmpty) {
-      return _wordsDbObs.value[random.nextInt(_wordsDbObs.value.length)];
+    if (_wordCollection.value.isNotEmpty) {
+      String str =
+          _wordCollection.value[random.nextInt(_wordCollection.value.length)];
+      dev.log(str);
+      return str;
     }
 
     Completer completer = Completer();
 
-    _wordsDbObs.observe((stringList) {
-      completer.complete(stringList[random.nextInt(_wordsDbObs.value.length)]);
+    _wordCollection.observe((stringList) {
+      completer
+          .complete(stringList[random.nextInt(_wordCollection.value.length)]);
     });
 
-    String str = await completer.future;
+    String str = (await completer.future).toString();
 
     dev.log(str);
 
@@ -56,43 +60,14 @@ class WordListDataBaseImpl implements WordListDatabase {
   // private -------------------------------------------------------------------
 
   _loadFileToLocalList() async {
-    if (_wordsDbObs.value.isNotEmpty) return;
+    if (_wordCollection.value.isNotEmpty) return;
 
     String loadedText = await rootBundle.loadString('assets/raws/words_5.txt');
 
-    _wordsDbObs.setValue = loadedText.split('\r\n');
+    _wordCollection.value = loadedText.split('\r\n');
   }
 
   // test ----------------------------------------------------------------------
 
-  get getWordsDB => _wordsDbObs.value;
-}
-
-class ListNotifier<T> {
-  List<T> _list = [];
-
-  Function(List<T>)? _job;
-
-  bool _isCalledFirstTime = false;
-
-  void listenFirstTimeCall() {
-    if (_job != null) _job!(_list);
-  }
-
-  set setValue(List<T> list) {
-    _list = list;
-
-    if (!_isCalledFirstTime) listenFirstTimeCall();
-    _isCalledFirstTime = true;
-
-    _notify();
-  }
-
-  List<T> get value => _list;
-
-  void _notify() {}
-
-  void observe(Function(List<T>) func) {
-    _job = func;
-  }
+  get getWordsDB => _wordCollection.value;
 }

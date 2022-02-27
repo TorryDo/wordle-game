@@ -17,7 +17,4 @@ class WordListRepositoryImpl extends WordListRepository {
   Future<String> getRandomWord() {
     return wordListDatabase.getRandomWord();
   }
-
-  /// test ---------------------------------------------------------------------
-
 }
