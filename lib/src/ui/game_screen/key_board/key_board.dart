@@ -35,7 +35,7 @@ class KeyBoard extends StatefulWidget {
 }
 
 class _KeyBoardState extends State<KeyBoard> {
-  final RxList<CharacterState> _keyboardCharacters = RxList<CharacterState>([
+  final RxList<CharacterState> keyboardCharacters = RxList<CharacterState>([
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', // start: 0, end: 10
     'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', // start: 10, end: 19
     'Z', 'X', 'C', 'V', 'B', 'N', 'M' // start: 19, end: 26
@@ -93,7 +93,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 0; i < 10; i++)
               KeyBoardButton(
-                characterState: _keyboardCharacters[i],
+                characterState: keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -117,7 +117,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 10; i < 19; i++)
               KeyBoardButton(
-                characterState: _keyboardCharacters[i],
+                characterState: keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -155,7 +155,7 @@ class _KeyBoardState extends State<KeyBoard> {
             // ------------------------------------------
             for (int i = 19; i < 26; i++)
               KeyBoardButton(
-                characterState: _keyboardCharacters[i],
+                characterState: keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -185,26 +185,40 @@ class _KeyBoardState extends State<KeyBoard> {
   void _observe() {
     _wordListController.typeState.stream.listen((typeState) {
       if (typeState is EnterState) {
-        for (var characterState in typeState.wordStates) {
-          final int position = _keyboardCharacters
-              .indexWhere((state) => state.char == characterState.char);
-          _keyboardCharacters[position] = characterState;
+        for (var newCharacterState in typeState.wordStates) {
+          final position = findPositionEqualTo(newCharacterState.char);
+
+          if (canCharacterStateBeUpdated(
+              keyboardCharacters[position], newCharacterState)) {
+            continue;
+          }
+
+          keyboardCharacters[position] = newCharacterState;
         }
       }
     });
 
     _wordListController.gameState.stream.listen((gameState) {
-
       if (gameState is EndGameState) {
         resetKeyboard();
       }
     });
   }
 
+  int findPositionEqualTo(String char) =>
+      keyboardCharacters.indexWhere((state) => state.char == char);
+
+  bool canCharacterStateBeUpdated(
+      CharacterState oldState, CharacterState newState) {
+    return (oldState is RightCharacterRightPositionState) ||
+        (oldState is RightCharacterWrongPositionState &&
+            newState is WrongWordState);
+  }
+
   void resetKeyboard() {
-    for (int i=0; i<_keyboardCharacters.length; i++) {
-      final prevChar = _keyboardCharacters[i].char;
-      _keyboardCharacters[i] = InitialCharacterState(prevChar);
+    for (int i = 0; i < keyboardCharacters.length; i++) {
+      final prevChar = keyboardCharacters[i].char;
+      keyboardCharacters[i] = InitialCharacterState(prevChar);
     }
   }
 }

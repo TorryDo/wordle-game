@@ -20,9 +20,16 @@ class WrongCharacterState extends CharacterState {
   const WrongCharacterState(String char) : super(char);
 }
 
+// related func  ---------------------------------------------------------------
+
 extension ConvertToCharacterStateList on List<String> {
   List<CharacterState> toCharacterStateList() {
     final mList = map((e) => InitialCharacterState(e));
     return mList.toList();
   }
 }
+
+
+
+
+
