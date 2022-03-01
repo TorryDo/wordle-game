@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
@@ -23,22 +23,23 @@ class _GameScreenState extends State<GameScreen> {
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
       .setTag((GameScreen).toString());
 
-  WordListController? _wordListController;
+  GameScreenController? _gameScreenController;
 
   /// lifecycle ----------------------------------------------------------------
 
   @override
   void initState() {
     super.initState();
-    Get.put(WordListController());
-    _wordListController ??= Get.find<WordListController>();
+    _gameScreenController ??= Get.find<GameScreenController>();
     _observe();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _page();
+    return _safeAreaPage();
   }
+
+  Widget _safeAreaPage() => SafeArea(child: _page());
 
   Widget _page() {
     var actionBarHeight = 70.0;
@@ -103,27 +104,11 @@ class _GameScreenState extends State<GameScreen> {
   /// private func -------------------------------------------------------------
 
   void _observe() {
-    // _wordListController?.typeState.stream.listen((event) {
-    //   if (event is TypingState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is TailOfWordState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is EnterState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is WordNotCompletedState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is DeleteState) {
-    //     _logger.d(event.toString());
-    //   } else if (event is HeadOfWordState) {
-    //     _logger.d(event.toString());
-    //   }
-    // });
-
-    _wordListController?.gameState.stream.listen((gameState) {
+    _gameScreenController?.gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
         if (gameState.hasWon) {
           Future.delayed(
-              const Duration(seconds: 2), _wordListController?.resetTheGame);
+              const Duration(seconds: 2), _gameScreenController?.resetTheGame);
         }
       }
     });
@@ -133,8 +118,6 @@ class _GameScreenState extends State<GameScreen> {
   void _onClickFromVirtualKeyboard(int ascii) {
     // _logger.d("from keyboard - " + String.fromCharCode(ascii));
 
-    _wordListController ??= Get.find<WordListController>();
-
-    _wordListController?.type(ascii);
+    _gameScreenController?.type(ascii);
   }
 }

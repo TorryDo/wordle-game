@@ -14,14 +14,14 @@ class PauseGameState extends GameState {
   const PauseGameState();
 }
 
-class ExitGameState extends GameState {
-  const ExitGameState();
-}
-
 class EndGameState extends GameState {
   final bool hasWon;
 
   const EndGameState({required this.hasWon});
+}
+
+class ExitGameState extends GameState {
+  const ExitGameState();
 }
 
 class ResetGameState extends GameState {

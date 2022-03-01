@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Tint{
 
   static const Color main_color = Colors.deepOrangeAccent;
+  static const Color THEME_COLOR = Colors.blueGrey;
 
   static const Color button_color = Colors.blueGrey;
 

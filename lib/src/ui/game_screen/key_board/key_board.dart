@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/common/widget/svg_icon.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/type_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board_button.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
@@ -48,11 +51,11 @@ class _KeyBoardState extends State<KeyBoard> {
   late double _buttonWidth;
   late double _buttonHeight;
 
-  late WordListController _wordListController;
+  late GameScreenController _gameViewModel;
 
   @override
   void initState() {
-    _wordListController = Get.find<WordListController>();
+    _gameViewModel = Get.find<GameScreenController>();
     _observe();
 
     super.initState();
@@ -183,7 +186,7 @@ class _KeyBoardState extends State<KeyBoard> {
   // private -------------------------------------------------------------------
 
   void _observe() {
-    _wordListController.typeState.stream.listen((typeState) {
+    _gameViewModel.typeState.stream.listen((typeState) {
       if (typeState is EnterState) {
         for (var newCharacterState in typeState.wordStates) {
           final position = findPositionEqualTo(newCharacterState.char);
@@ -198,7 +201,7 @@ class _KeyBoardState extends State<KeyBoard> {
       }
     });
 
-    _wordListController.gameState.stream.listen((gameState) {
+    _gameViewModel.gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
         resetKeyboard();
       }
@@ -210,9 +213,14 @@ class _KeyBoardState extends State<KeyBoard> {
 
   bool canCharacterStateBeUpdated(
       CharacterState oldState, CharacterState newState) {
-    return (oldState is RightCharacterRightPositionState) ||
-        (oldState is RightCharacterWrongPositionState &&
-            newState is WrongWordState);
+    if (oldState is RightCharacterRightPositionState) {
+      return true;
+    }
+    if (oldState is RightCharacterWrongPositionState &&
+        newState is WrongCharacterState) {
+      return true;
+    }
+    return false;
   }
 
   void resetKeyboard() {

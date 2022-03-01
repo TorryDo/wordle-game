@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:wordle_game/src/provider/text_styles.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 
 import '../../../utils/res/dimens.dart';
 import '../../../utils/res/tint.dart';

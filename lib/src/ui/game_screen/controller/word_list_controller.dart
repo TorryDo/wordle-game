@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/type_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/word_controller.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 

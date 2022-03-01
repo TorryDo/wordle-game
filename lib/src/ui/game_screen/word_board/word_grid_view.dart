@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/char_box.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 import 'package:wordle_game/src/utils/constants.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
 class WordGridView extends StatefulWidget {
-
   final int wordLength;
   final double width;
   final Color backgroundColor;
@@ -15,16 +14,15 @@ class WordGridView extends StatefulWidget {
       {Key? key,
       required this.wordLength,
       required this.width,
-      this.backgroundColor = Colors.transparent
-      }) : super(key: key);
+      this.backgroundColor = Colors.transparent})
+      : super(key: key);
 
   @override
   _WordGridViewState createState() => _WordGridViewState();
 }
 
 class _WordGridViewState extends State<WordGridView> {
-
-  late WordListController _wordListController;
+  late GameScreenController _wordListController;
 
   final _logger = Logger()
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
@@ -36,14 +34,14 @@ class _WordGridViewState extends State<WordGridView> {
 
     var itemNumber = (widget.wordLength + 1) * widget.wordLength;
 
-    _wordListController = Get.find<WordListController>();
+    _wordListController = Get.find<GameScreenController>();
 
     _wordListController.setupTheGame(itemNumber, widget.wordLength);
   }
 
   @override
-  Widget build(BuildContext context) => _wordGridView(widget.wordLength, widget.width);
-
+  Widget build(BuildContext context) =>
+      _wordGridView(widget.wordLength, widget.width);
 
   Widget _wordGridView(int charNumber, double width) {
     double charBoxSize = width / (charNumber + 1);
