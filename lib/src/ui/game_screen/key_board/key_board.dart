@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/common/widget/svg_icon.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board_button.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
@@ -41,8 +38,6 @@ class _KeyBoardState extends State<KeyBoard> {
   @override
   void initState() {
     _gameScreenController = Get.find<GameScreenController>();
-    _observe();
-
     super.initState();
   }
 
@@ -166,56 +161,5 @@ class _KeyBoardState extends State<KeyBoard> {
         ),
       ),
     );
-  }
-
-  // private -------------------------------------------------------------------
-
-  void _observe() {
-    _gameScreenController.typeState.stream.listen((typeState) {
-      if (typeState is EnterState) {
-        for (var newCharacterState in typeState.wordStates) {
-          final position = findPositionEqualTo(newCharacterState.char);
-
-          if (canCharacterStateBeUpdated(
-              _gameScreenController.keyboardCharacters[position],
-              newCharacterState)) {
-            continue;
-          }
-
-          _gameScreenController.keyboardCharacters[position] =
-              newCharacterState;
-        }
-      }
-    });
-
-    _gameScreenController.gameState.stream.listen((gameState) {
-      if (gameState is EndGameState) {
-        resetKeyboard();
-      }
-    });
-  }
-
-  int findPositionEqualTo(String char) =>
-      _gameScreenController.keyboardCharacters
-          .indexWhere((state) => state.char == char);
-
-  bool canCharacterStateBeUpdated(
-      CharacterState oldState, CharacterState newState) {
-    if (oldState is RightCharacterRightPositionState) {
-      return true;
-    }
-    if (oldState is RightCharacterWrongPositionState &&
-        newState is WrongCharacterState) {
-      return true;
-    }
-    return false;
-  }
-
-  void resetKeyboard() {
-    for (int i = 0; i < _gameScreenController.keyboardCharacters.length; i++) {
-      final prevChar = _gameScreenController.keyboardCharacters[i].char;
-      _gameScreenController.keyboardCharacters[i] =
-          InitialCharacterState(prevChar);
-    }
   }
 }

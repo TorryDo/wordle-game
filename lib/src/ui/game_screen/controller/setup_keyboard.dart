@@ -1,49 +1,39 @@
-import 'package:get/get.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 
 class SetupKeyboard {
-  RxList<CharacterState> keyboardCharacters;
-  Rx<TypeState> typeState;
-  Rx<GameState> gameState;
+  final GameObservableData liveData;
 
-  SetupKeyboard(
-      {required this.keyboardCharacters,
-      required this.typeState,
-      required this.gameState}) {
-    _observe();
+  SetupKeyboard(this.liveData);
+
+  void updateStateBasedOnCharacters(EnterState enterState) {
+    for (var newCharacterState in enterState.wordStates) {
+      final position = _findPositionEqualTo(newCharacterState.char);
+
+      if (_canCharacterStateBeUpdated(
+          liveData.keyboardCharacters[position], newCharacterState)) {
+        continue;
+      }
+
+      liveData.keyboardCharacters[position] = newCharacterState;
+    }
+  }
+
+  void resetKeyboard() {
+    for (int i = 0; i < liveData.keyboardCharacters.length; i++) {
+      final prevChar = liveData.keyboardCharacters[i].char;
+      liveData.keyboardCharacters[i] = InitialCharacterState(prevChar);
+    }
   }
 
   // private -------------------------------------------------------------------
 
-  void _observe() {
-    typeState.stream.listen((typeState) {
-      if (typeState is EnterState) {
-        for (var newCharacterState in typeState.wordStates) {
-          final position = findPositionEqualTo(newCharacterState.char);
+  int _findPositionEqualTo(String char) =>
+      liveData.keyboardCharacters.indexWhere((state) => state.char == char);
 
-          if (canCharacterStateBeUpdated(
-              keyboardCharacters[position], newCharacterState)) {
-            continue;
-          }
-
-          keyboardCharacters[position] = newCharacterState;
-        }
-      }
-    });
-
-    gameState.stream.listen((gameState) {
-      if (gameState is EndGameState) {
-        resetKeyboard();
-      }
-    });
-  }
-
-  int findPositionEqualTo(String char) =>
-      keyboardCharacters.indexWhere((state) => state.char == char);
-
-  bool canCharacterStateBeUpdated(
+  bool _canCharacterStateBeUpdated(
       CharacterState oldState, CharacterState newState) {
     if (oldState is RightCharacterRightPositionState) {
       return true;
@@ -53,12 +43,5 @@ class SetupKeyboard {
       return true;
     }
     return false;
-  }
-
-  void resetKeyboard() {
-    for (int i = 0; i < keyboardCharacters.length; i++) {
-      final prevChar = keyboardCharacters[i].char;
-      keyboardCharacters[i] = InitialCharacterState(prevChar);
-    }
   }
 }

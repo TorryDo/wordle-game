@@ -1,5 +1,5 @@
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
@@ -7,39 +7,30 @@ import 'package:wordle_game/src/utils/extension.dart';
 
 import '../../../data_source/word_list/word_list_repository.dart';
 
-class SetupGameBoard {
+class SetupWordBoard {
   static const WRONG_CHAR = 0;
   static const RIGHT_CHAR_RIGHT_PLACE = 2;
   static const RIGHT_CHAR_WRONG_PLACE = 1;
   static const PLACE_HOLDER_CHAR = '-';
 
-  RxString targetWord;
-  Rx<GameState> gameState;
-  RxList<CharacterState> gameBoardStateList;
-  Rx<TypeState> typeState;
-
   final wordListRepository = GetIt.I.get<WordListRepository>();
+  final GameObservableData liveData;
 
+  static const String emptyChar = ' ';
   var wordLength = 0;
+  var _currentPositionInWord = 0;
 
-  SetupGameBoard(
-      {required this.targetWord,
-      required this.gameState,
-      required this.gameBoardStateList,
-      required this.typeState}) {
+  SetupWordBoard(this.liveData) {
     /// check if previous game still be there
 
     setupTargetWord();
   }
 
-  static const String emptyChar = ' ';
-  var _currentPositionInWord = 0;
-
   // func ----------------------------------------------------------------------
 
   void setupTheGame(int itemNumber, int wordLength) {
     this.wordLength = wordLength;
-    gameBoardStateList.value =
+    liveData.gameBoardStateList.value =
         List.filled(itemNumber, const InitialCharacterState(emptyChar));
   }
 
@@ -47,14 +38,14 @@ class SetupGameBoard {
   void type(int ascii) {
     /// 3 input types
     void _inputAtoZ() {
-      if (!isEndOfWord(wordLength, _currentPositionInWord)) {
+      if (!_isEndOfWord(wordLength, _currentPositionInWord)) {
         int lastEmptyChar = _findLastEmptyCharPosition();
         if (lastEmptyChar < 0) return;
 
-        gameBoardStateList[lastEmptyChar] =
+        liveData.gameBoardStateList[lastEmptyChar] =
             InitialCharacterState(String.fromCharCode(ascii));
 
-        typeState.value = TypingState(ascii: ascii);
+        liveData.typeState.value = TypingState(ascii: ascii);
 
         _currentPositionInWord++;
       } else {
@@ -65,8 +56,8 @@ class SetupGameBoard {
     }
 
     void _inputDelete() {
-      if (!isStartOfWord(_currentPositionInWord)) {
-        gameBoardStateList[_findLastCharPosition()] =
+      if (!_isStartOfWord(_currentPositionInWord)) {
+        liveData.gameBoardStateList[_findLastCharPosition()] =
             const InitialCharacterState(emptyChar);
         _currentPositionInWord--;
         _notifyTypingState(const DeleteState());
@@ -84,13 +75,13 @@ class SetupGameBoard {
      *
      */
     void _inputEnter() {
-      if (isEndOfWord(wordLength, _currentPositionInWord)) {
-        final tempInputCompletedWord = _getCompleteWord();
+      if (_isEndOfWord(wordLength, _currentPositionInWord)) {
+        final tempInputCompletedWord = getCompleteWord();
 
-        isExistWord(tempInputCompletedWord, (isCorrect) {
+        _isExistedWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
-            final statusList = getCharactersStatusListInWord(
-                targetWord.value, tempInputCompletedWord);
+            final statusList = _getCharactersStatusListInWord(
+                liveData.targetWord.value, tempInputCompletedWord);
 
             final tempLastChar = _findLastCharPosition();
 
@@ -109,15 +100,17 @@ class SetupGameBoard {
             _currentPositionInWord = 0;
 
             _notifyTypingState(EnterState(
-                wordStates: gameBoardStateList.sublist(
+                wordStates: liveData.gameBoardStateList.sublist(
                     _findLastCharPosition() - wordLength + 1,
                     _findLastCharPosition() + 1)));
 
-            if (isMatchedTargetWord(tempInputCompletedWord)) {
+            if (_isMatchedTargetWord(tempInputCompletedWord)) {
               /// YOU WIN THIS GAME
 
-              gameState.value = const InitialGameState();
-              gameState.value = const EndGameState(hasWon: true);
+              _notifyGameState(const EndGameState(hasWon: true));
+            } else if (_isLastTry()) {
+              /// YOU LOSE THIS GAME, IDIOT
+              _notifyGameState(const EndGameState(hasWon: false));
             }
           } else {
             _notifyTypingState(const WrongWordState());
@@ -141,14 +134,30 @@ class SetupGameBoard {
 
   void resetTheGame() {
     (i) {
-      gameBoardStateList[i] = const InitialCharacterState(emptyChar);
-    }.repeat(gameBoardStateList.length);
+      liveData.gameBoardStateList[i] = const InitialCharacterState(emptyChar);
+    }.repeat(liveData.gameBoardStateList.length);
     _currentPositionInWord = 0;
     setupTargetWord();
   }
 
-  // -----------
-  List<int> getCharactersStatusListInWord(String target, String input) {
+  String getCompleteWord() {
+    /// when this function is called, last char is in the end of word
+    final lastChar = _findLastCharPosition();
+    String result = '';
+    for (int i = lastChar + 1 - wordLength; i < lastChar + 1; i++) {
+      result += liveData.gameBoardStateList[i].char;
+    }
+    return result;
+  }
+
+  void setupTargetWord({Function(bool)? wordReady}) async {
+    liveData.targetWord.value = await wordListRepository.getRandomWord();
+    wordReady ?? (true);
+  }
+
+  // private -------------------------------------------------------------------
+
+  List<int> _getCharactersStatusListInWord(String target, String input) {
     input = input.toLowerCase();
 
     List<int> rs = List.filled(target.length, WRONG_CHAR);
@@ -178,59 +187,55 @@ class SetupGameBoard {
     return rs;
   }
 
-  void setupTargetWord({Function(bool)? wordReady}) async {
-    targetWord.value = await wordListRepository.getRandomWord();
-    wordReady ?? (true);
+  bool _isMatchedTargetWord(String word) {
+    return word.toLowerCase() == liveData.targetWord.value;
   }
 
-  bool isMatchedTargetWord(String word) {
-    return word.toLowerCase() == targetWord.value;
-  }
-
-  void isExistWord(String word, Function(bool) result) async {
+  void _isExistedWord(String word, Function(bool) result) async {
     bool b = await wordListRepository.isWordExist(word);
     result(b);
   }
 
-  bool isEndOfWord(int wordLength, int position) => position == wordLength;
-
-  bool isStartOfWord(int position) => position <= 0;
-
-  // private -------------------------------------------------------------------
-
-  int _findLastEmptyCharPosition() =>
-      gameBoardStateList.indexWhere((c) => c.char == emptyChar);
-
-  int _findLastCharPosition() =>
-      gameBoardStateList.lastIndexWhere((c) => c.char != emptyChar);
-
-  String _getCompleteWord() {
-    /// when this function is called, last char is in the end of word
-    final lastChar = _findLastCharPosition();
-    String result = '';
-    for (int i = lastChar + 1 - wordLength; i < lastChar + 1; i++) {
-      result += gameBoardStateList[i].char;
-    }
-    return result;
-  }
+  // notify states -------------------------------------------------------------
 
   void _notifyTypingState(TypeState newTypeState) {
-    typeState.value = const InitialState();
-    typeState.value = newTypeState;
+    liveData.typeState.value = const InitialState();
+    liveData.typeState.value = newTypeState;
   }
 
   void _notifyWrongCharState(int position) {
-    final tempChar = gameBoardStateList[position].char;
-    gameBoardStateList[position] = WrongCharacterState(tempChar);
+    final tempChar = liveData.gameBoardStateList[position].char;
+    liveData.gameBoardStateList[position] = WrongCharacterState(tempChar);
   }
 
   void _notifyToRightCharRightPlaceState(int position) {
-    final tempChar = gameBoardStateList[position].char;
-    gameBoardStateList[position] = RightCharacterRightPositionState(tempChar);
+    final tempChar = liveData.gameBoardStateList[position].char;
+    liveData.gameBoardStateList[position] =
+        RightCharacterRightPositionState(tempChar);
   }
 
   void _notifyToRightCharWrongPlaceState(int position) {
-    final tempChar = gameBoardStateList[position].char;
-    gameBoardStateList[position] = RightCharacterWrongPositionState(tempChar);
+    final tempChar = liveData.gameBoardStateList[position].char;
+    liveData.gameBoardStateList[position] =
+        RightCharacterWrongPositionState(tempChar);
   }
+
+  void _notifyGameState(GameState newGameState) {
+    liveData.gameState.value = newGameState;
+  }
+
+  // shorten function ----------------------------------------------------------
+
+  bool _isLastTry() =>
+      _findLastCharPosition() + 1 >= liveData.gameBoardStateList.length;
+
+  bool _isEndOfWord(int wordLength, int position) => position == wordLength;
+
+  bool _isStartOfWord(int position) => position <= 0;
+
+  int _findLastEmptyCharPosition() =>
+      liveData.gameBoardStateList.indexWhere((c) => c.char == emptyChar);
+
+  int _findLastCharPosition() =>
+      liveData.gameBoardStateList.lastIndexWhere((c) => c.char != emptyChar);
 }

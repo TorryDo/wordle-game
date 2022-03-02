@@ -112,6 +112,6 @@ class _GameScreenState extends State<GameScreen> {
   // named function ------------------------------------------------------------
 
   void _clickedFromKeyboard(int ascii) {
-    _gameScreenController?.setupGameBoard?.type(ascii);
+    _gameScreenController?.setupWordBoard?.type(ascii);
   }
 }

@@ -1,26 +1,24 @@
 import 'package:wordle_game/src/common/interface/widget_lifecycle.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/setup_game_board.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_keyboard.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
+
+import '../../../utils/constants.dart';
+import '../../../utils/logger.dart';
 
 class GameScreenController extends GameObservableData with WidgetLifecycle {
-
-  // GameObservableData gameObservableData = GameObservableData();
+  final _logger = Logger()
+      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
+      .setTag((GameScreenController).toString());
 
   SetupKeyboard? setupKeyboard;
-  SetupGameBoard? setupGameBoard;
+  SetupWordBoard? setupWordBoard;
 
   GameScreenController() {
-    setupKeyboard = SetupKeyboard(
-        keyboardCharacters: keyboardCharacters,
-        typeState: typeState,
-        gameState: gameState);
-    setupGameBoard = SetupGameBoard(
-        targetWord: targetWord,
-        gameState: gameState,
-        gameBoardStateList: gameBoardStateList,
-        typeState: typeState);
+    setupWordBoard = SetupWordBoard(this);
+    setupKeyboard = SetupKeyboard(this);
   }
 
   // lifecycle -----------------------------------------------------------------
@@ -42,9 +40,24 @@ class GameScreenController extends GameObservableData with WidgetLifecycle {
     gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
         if (gameState.hasWon) {
-          Future.delayed(
-              const Duration(seconds: 2), setupGameBoard?.resetTheGame);
+          Future.delayed(const Duration(seconds: 2), () {
+            _logger.d("you win, genius");
+            setupWordBoard?.resetTheGame();
+            setupKeyboard?.resetKeyboard();
+          });
+        } else {
+          Future.delayed(const Duration(seconds: 2), () {
+            _logger.d("you lose, fool");
+            setupWordBoard?.resetTheGame();
+            setupKeyboard?.resetKeyboard();
+          });
         }
+      }
+    });
+
+    typeState.stream.listen((typeState) {
+      if (typeState is EnterState) {
+        setupKeyboard?.updateStateBasedOnCharacters(typeState);
       }
     });
   }
