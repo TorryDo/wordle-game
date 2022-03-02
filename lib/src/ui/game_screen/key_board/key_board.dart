@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/common/widget/svg_icon.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board_button.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
-import '../../../utils/constants.dart';
-import '../../../utils/logger.dart';
 import '../../../utils/res/dimens.dart';
-import '../controller/word_list_controller.dart';
 
 class KeyBoard extends StatefulWidget {
   final Color backgroundColor;
@@ -38,16 +33,6 @@ class KeyBoard extends StatefulWidget {
 }
 
 class _KeyBoardState extends State<KeyBoard> {
-  final RxList<CharacterState> keyboardCharacters = RxList<CharacterState>([
-    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', // start: 0, end: 10
-    'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', // start: 10, end: 19
-    'Z', 'X', 'C', 'V', 'B', 'N', 'M' // start: 19, end: 26
-  ].toCharacterStateList());
-
-  final logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((KeyBoard).toString());
-
   late double _buttonWidth;
   late double _buttonHeight;
 
@@ -96,7 +81,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 0; i < 10; i++)
               KeyBoardButton(
-                characterState: keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -120,7 +105,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 10; i < 19; i++)
               KeyBoardButton(
-                characterState: keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -158,7 +143,7 @@ class _KeyBoardState extends State<KeyBoard> {
             // ------------------------------------------
             for (int i = 19; i < 26; i++)
               KeyBoardButton(
-                characterState: keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardCharacters[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -192,11 +177,13 @@ class _KeyBoardState extends State<KeyBoard> {
           final position = findPositionEqualTo(newCharacterState.char);
 
           if (canCharacterStateBeUpdated(
-              keyboardCharacters[position], newCharacterState)) {
+              _gameScreenController.keyboardCharacters[position],
+              newCharacterState)) {
             continue;
           }
 
-          keyboardCharacters[position] = newCharacterState;
+          _gameScreenController.keyboardCharacters[position] =
+              newCharacterState;
         }
       }
     });
@@ -209,7 +196,8 @@ class _KeyBoardState extends State<KeyBoard> {
   }
 
   int findPositionEqualTo(String char) =>
-      keyboardCharacters.indexWhere((state) => state.char == char);
+      _gameScreenController.keyboardCharacters
+          .indexWhere((state) => state.char == char);
 
   bool canCharacterStateBeUpdated(
       CharacterState oldState, CharacterState newState) {
@@ -224,9 +212,10 @@ class _KeyBoardState extends State<KeyBoard> {
   }
 
   void resetKeyboard() {
-    for (int i = 0; i < keyboardCharacters.length; i++) {
-      final prevChar = keyboardCharacters[i].char;
-      keyboardCharacters[i] = InitialCharacterState(prevChar);
+    for (int i = 0; i < _gameScreenController.keyboardCharacters.length; i++) {
+      final prevChar = _gameScreenController.keyboardCharacters[i].char;
+      _gameScreenController.keyboardCharacters[i] =
+          InitialCharacterState(prevChar);
     }
   }
 }

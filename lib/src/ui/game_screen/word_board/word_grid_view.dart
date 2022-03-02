@@ -22,7 +22,7 @@ class WordGridView extends StatefulWidget {
 }
 
 class _WordGridViewState extends State<WordGridView> {
-  late GameScreenController _wordListController;
+  late GameScreenController _gameScreenController;
 
   final _logger = Logger()
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
@@ -34,9 +34,9 @@ class _WordGridViewState extends State<WordGridView> {
 
     var itemNumber = (widget.wordLength + 1) * widget.wordLength;
 
-    _wordListController = Get.find<GameScreenController>();
+    _gameScreenController = Get.find<GameScreenController>();
 
-    _wordListController.setupTheGame(itemNumber, widget.wordLength);
+    _gameScreenController.setupGameBoard?.setupTheGame(itemNumber, widget.wordLength);
   }
 
   @override
@@ -56,7 +56,7 @@ class _WordGridViewState extends State<WordGridView> {
       color: widget.backgroundColor,
       child: Obx(
         () => GridView.builder(
-            itemCount: _wordListController.gameBoardStateList.length,
+            itemCount: _gameScreenController.gameBoardStateList.length,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: charNumber,
@@ -64,7 +64,7 @@ class _WordGridViewState extends State<WordGridView> {
                 mainAxisSpacing: mainAxisSpacing),
             itemBuilder: (context, index) => CharBox(
                   index: index,
-                  characterState: _wordListController.gameBoardStateList[index],
+                  characterState: _gameScreenController.gameBoardStateList[index],
                   boxSize: charBoxSize,
                   onClick: (index) {
                     _onCharBoxClick(index);

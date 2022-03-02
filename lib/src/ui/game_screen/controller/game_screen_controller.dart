@@ -1,8 +1,28 @@
 import 'package:wordle_game/src/common/interface/widget_lifecycle.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/setup_game_board.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/setup_keyboard.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_list_controller.dart';
 
-class GameScreenController extends WordListController with WidgetLifecycle {
+class GameScreenController extends GameObservableData with WidgetLifecycle {
+
+  // GameObservableData gameObservableData = GameObservableData();
+
+  SetupKeyboard? setupKeyboard;
+  SetupGameBoard? setupGameBoard;
+
+  GameScreenController() {
+    setupKeyboard = SetupKeyboard(
+        keyboardCharacters: keyboardCharacters,
+        typeState: typeState,
+        gameState: gameState);
+    setupGameBoard = SetupGameBoard(
+        targetWord: targetWord,
+        gameState: gameState,
+        gameBoardStateList: gameBoardStateList,
+        typeState: typeState);
+  }
+
   // lifecycle -----------------------------------------------------------------
 
   @override
@@ -22,7 +42,8 @@ class GameScreenController extends WordListController with WidgetLifecycle {
     gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
         if (gameState.hasWon) {
-          Future.delayed(const Duration(seconds: 2), resetTheGame);
+          Future.delayed(
+              const Duration(seconds: 2), setupGameBoard?.resetTheGame);
         }
       }
     });

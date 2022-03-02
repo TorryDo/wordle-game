@@ -1,23 +1,39 @@
-import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/word_controller.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
-class WordListController extends WordController {
-  static const String emptyChar = ' ';
-  var _currentPositionInWord = 0;
+import '../../../data_source/word_list/word_list_repository.dart';
 
-  RxList<CharacterState> gameBoardStateList = RxList<CharacterState>();
-  Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
-  Rx<GameState> gameState = Rx<GameState>(const InitialGameState());
+class SetupGameBoard {
+  static const WRONG_CHAR = 0;
+  static const RIGHT_CHAR_RIGHT_PLACE = 2;
+  static const RIGHT_CHAR_WRONG_PLACE = 1;
+  static const PLACE_HOLDER_CHAR = '-';
 
-  WordListController() {
+  RxString targetWord;
+  Rx<GameState> gameState;
+  RxList<CharacterState> gameBoardStateList;
+  Rx<TypeState> typeState;
+
+  final wordListRepository = GetIt.I.get<WordListRepository>();
+
+  var wordLength = 0;
+
+  SetupGameBoard(
+      {required this.targetWord,
+      required this.gameState,
+      required this.gameBoardStateList,
+      required this.typeState}) {
     /// check if previous game still be there
 
-    super.setupTargetWord();
+    setupTargetWord();
   }
+
+  static const String emptyChar = ' ';
+  var _currentPositionInWord = 0;
 
   // func ----------------------------------------------------------------------
 
@@ -71,7 +87,7 @@ class WordListController extends WordController {
       if (isEndOfWord(wordLength, _currentPositionInWord)) {
         final tempInputCompletedWord = _getCompleteWord();
 
-        super.isExistWord(tempInputCompletedWord, (isCorrect) {
+        isExistWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
             final statusList = getCharactersStatusListInWord(
                 targetWord.value, tempInputCompletedWord);
@@ -79,13 +95,12 @@ class WordListController extends WordController {
             final tempLastChar = _findLastCharPosition();
 
             for (int i = 0; i < wordLength; i++) {
-              if (statusList[i] == WordController.RIGHT_CHAR_RIGHT_PLACE) {
+              if (statusList[i] == RIGHT_CHAR_RIGHT_PLACE) {
                 _notifyToRightCharRightPlaceState(
                     tempLastChar - wordLength + 1 + i);
-              } else if (statusList[i] == WordController.WRONG_CHAR) {
+              } else if (statusList[i] == WRONG_CHAR) {
                 _notifyWrongCharState(tempLastChar - wordLength + 1 + i);
-              } else if (statusList[i] ==
-                  WordController.RIGHT_CHAR_WRONG_PLACE) {
+              } else if (statusList[i] == RIGHT_CHAR_WRONG_PLACE) {
                 _notifyToRightCharWrongPlaceState(
                     tempLastChar - wordLength + 1 + i);
               }
@@ -98,7 +113,7 @@ class WordListController extends WordController {
                     _findLastCharPosition() - wordLength + 1,
                     _findLastCharPosition() + 1)));
 
-            if (super.isMatchedTargetWord(tempInputCompletedWord)) {
+            if (isMatchedTargetWord(tempInputCompletedWord)) {
               /// YOU WIN THIS GAME
 
               gameState.value = const InitialGameState();
@@ -129,8 +144,57 @@ class WordListController extends WordController {
       gameBoardStateList[i] = const InitialCharacterState(emptyChar);
     }.repeat(gameBoardStateList.length);
     _currentPositionInWord = 0;
-    super.setupTargetWord();
+    setupTargetWord();
   }
+
+  // -----------
+  List<int> getCharactersStatusListInWord(String target, String input) {
+    input = input.toLowerCase();
+
+    List<int> rs = List.filled(target.length, WRONG_CHAR);
+
+    List<String> targetChars = target.split('');
+
+    for (int i = 0; i < target.length; i++) {
+      if (!target.contains(input[i])) {
+        input = input.replaceCharAt(i, PLACE_HOLDER_CHAR);
+      }
+    }
+
+    final size = target.length;
+
+    for (int i = 0; i < size; i++) {
+      if (!targetChars.contains(input[i])) continue;
+      targetChars.remove(input[i]);
+
+      if (input[i] == PLACE_HOLDER_CHAR) continue;
+      if (target[i] == input[i]) {
+        rs[i] = RIGHT_CHAR_RIGHT_PLACE;
+        continue;
+      }
+      rs[i] = RIGHT_CHAR_WRONG_PLACE;
+    }
+
+    return rs;
+  }
+
+  void setupTargetWord({Function(bool)? wordReady}) async {
+    targetWord.value = await wordListRepository.getRandomWord();
+    wordReady ?? (true);
+  }
+
+  bool isMatchedTargetWord(String word) {
+    return word.toLowerCase() == targetWord.value;
+  }
+
+  void isExistWord(String word, Function(bool) result) async {
+    bool b = await wordListRepository.isWordExist(word);
+    result(b);
+  }
+
+  bool isEndOfWord(int wordLength, int position) => position == wordLength;
+
+  bool isStartOfWord(int position) => position <= 0;
 
   // private -------------------------------------------------------------------
 
