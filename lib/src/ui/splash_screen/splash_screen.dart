@@ -17,12 +17,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _splashScreenController ??= Get.find<SplashScreenController>();
-    _splashScreenController?.onInitWidget();
+    _splashScreenController?.onInitState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _splashScreenController?.onBuildWidget();
+    _splashScreenController?.onBuildState();
     return _screen();
   }
 

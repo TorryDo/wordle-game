@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
@@ -25,19 +24,28 @@ class _GameScreenState extends State<GameScreen> {
 
   GameScreenController? _gameScreenController;
 
-  /// lifecycle ----------------------------------------------------------------
+  // lifecycle -----------------------------------------------------------------
 
   @override
   void initState() {
     super.initState();
     _gameScreenController ??= Get.find<GameScreenController>();
-    _observe();
+    _gameScreenController?.onInitState();
   }
 
   @override
   Widget build(BuildContext context) {
+    _gameScreenController?.onBuildState();
     return _safeAreaPage();
   }
+
+  @override
+  void dispose() {
+    _gameScreenController?.onDispose();
+    super.dispose();
+  }
+
+  // widgets -------------------------------------------------------------------
 
   Widget _safeAreaPage() => SafeArea(child: _page());
 
@@ -93,7 +101,7 @@ class _GameScreenState extends State<GameScreen> {
         alignment: Alignment.bottomCenter,
         child: KeyBoard(
           buttonColor: Colors.white10,
-          onClick: (ascii) => _onClickFromVirtualKeyboard(ascii),
+          onClick: (ascii) => _clickedFromKeyboard(ascii),
         ));
   }
 
@@ -101,23 +109,9 @@ class _GameScreenState extends State<GameScreen> {
     return const BannerAds();
   }
 
-  /// private func -------------------------------------------------------------
+  // named function ------------------------------------------------------------
 
-  void _observe() {
-    _gameScreenController?.gameState.stream.listen((gameState) {
-      if (gameState is EndGameState) {
-        if (gameState.hasWon) {
-          Future.delayed(
-              const Duration(seconds: 2), _gameScreenController?.resetTheGame);
-        }
-      }
-    });
-  }
-
-  /* clicked on keyboard */
-  void _onClickFromVirtualKeyboard(int ascii) {
-    // _logger.d("from keyboard - " + String.fromCharCode(ascii));
-
+  void _clickedFromKeyboard(int ascii) {
     _gameScreenController?.type(ascii);
   }
 }

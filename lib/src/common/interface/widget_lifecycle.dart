@@ -1,29 +1,17 @@
 abstract class WidgetLifecycle{
 
-  void onInitWidget();
+  void onInitState(){}
 
-  void onBuildWidget();
+  void onDidChangeDependencies(){}
 
-  void onPauseWidget();
+  void onBuildState(){}
 
-  void onResumeWidget();
+  void onDidUpdateWidget(){}
+
+  void onSetState(){}
+
+  void onDispose(){}
 
   WidgetLifecycle get lifecycle => this;
-
-}
-
-class DefaultWidgetLifecycle extends WidgetLifecycle{
-
-  @override
-  void onInitWidget() {}
-
-  @override
-  void onBuildWidget() {}
-
-  @override
-  void onPauseWidget() {}
-
-  @override
-  void onResumeWidget() {}
 
 }

@@ -34,6 +34,8 @@ class WordListDataBaseImpl implements WordListDatabase {
     return output != null;
   }
 
+  /// kiểm tra function dưới sau.
+  /// khi chưa thêm "if(completer.isCompleted) return;" thì báo lỗi badstate, future already completed
   @override
   Future<String> getRandomWord() async {
     if (_wordCollection.value.isNotEmpty) {
@@ -46,8 +48,11 @@ class WordListDataBaseImpl implements WordListDatabase {
     Completer completer = Completer();
 
     _wordCollection.observe((stringList) {
-      completer
-          .complete(stringList[random.nextInt(_wordCollection.value.length)]);
+      if(completer.isCompleted) return;
+      completer.complete(
+          stringList[random.nextInt(_wordCollection.value.length)]
+      );
+
     });
 
     String str = (await completer.future).toString();

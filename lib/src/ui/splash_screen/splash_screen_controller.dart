@@ -22,23 +22,23 @@ class SplashScreenController extends GetxController with WidgetLifecycle{
   // lifecycle -----------------------------------------------------------------
 
   @override
-  void onInitWidget() {
+  void onInitState() {
     logger.d("onInitWidget");
   }
 
   @override
-  void onBuildWidget() {
+  void onBuildState() {
     _navigateToGameScreenAfter();
     logger.d("onBuildWidget");
   }
 
   @override
-  void onPauseWidget() {
+  void onDidChangeDependencies() {
     logger.d("onPauseWidget");
   }
 
   @override
-  void onResumeWidget() {
+  void onDispose() {
     logger.d("onResumeWidget");
   }
 

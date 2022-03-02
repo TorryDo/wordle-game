@@ -8,9 +8,8 @@ class ListNotifier<T> {
   void listenFirstTimeCall() {
     if (!_isCalledFirstTime) {
       if (_job != null) _job!(_list);
-
-      _isCalledFirstTime = true;
     }
+    _isCalledFirstTime = true;
   }
 
   void _notify() {
@@ -21,7 +20,7 @@ class ListNotifier<T> {
     _job = func;
   }
 
-// getter and setter ---------------------------------------------------------
+  // getter and setter ---------------------------------------------------------
 
   set value(List<T> list) {
     _list = list;

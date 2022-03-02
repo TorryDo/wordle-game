@@ -51,11 +51,11 @@ class _KeyBoardState extends State<KeyBoard> {
   late double _buttonWidth;
   late double _buttonHeight;
 
-  late GameScreenController _gameViewModel;
+  late GameScreenController _gameScreenController;
 
   @override
   void initState() {
-    _gameViewModel = Get.find<GameScreenController>();
+    _gameScreenController = Get.find<GameScreenController>();
     _observe();
 
     super.initState();
@@ -186,7 +186,7 @@ class _KeyBoardState extends State<KeyBoard> {
   // private -------------------------------------------------------------------
 
   void _observe() {
-    _gameViewModel.typeState.stream.listen((typeState) {
+    _gameScreenController.typeState.stream.listen((typeState) {
       if (typeState is EnterState) {
         for (var newCharacterState in typeState.wordStates) {
           final position = findPositionEqualTo(newCharacterState.char);
@@ -201,7 +201,7 @@ class _KeyBoardState extends State<KeyBoard> {
       }
     });
 
-    _gameViewModel.gameState.stream.listen((gameState) {
+    _gameScreenController.gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
         resetKeyboard();
       }
