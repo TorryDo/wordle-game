@@ -20,15 +20,11 @@ class SetupWordBoard {
   var wordLength = 0;
   var _currentPositionInWord = 0;
 
-  SetupWordBoard(this.liveData) {
-    /// check if previous game still be there
-
-    setupTargetWord();
-  }
+  SetupWordBoard(this.liveData);
 
   // func ----------------------------------------------------------------------
 
-  void setupTheGame(int itemNumber, int wordLength) {
+  void initWordBoard(int itemNumber, int wordLength) {
     this.wordLength = wordLength;
     liveData.gameBoardStateList.value =
         List.filled(itemNumber, const InitialCharacterState(emptyChar));
@@ -132,7 +128,7 @@ class SetupWordBoard {
     }
   }
 
-  void resetTheGame() {
+  void resetWordBoard() {
     (i) {
       liveData.gameBoardStateList[i] = const InitialCharacterState(emptyChar);
     }.repeat(liveData.gameBoardStateList.length);
@@ -155,7 +151,7 @@ class SetupWordBoard {
     wordReady ?? (true);
   }
 
-  // private -------------------------------------------------------------------
+  /// private ------------------------------------------------------------------
 
   List<int> _getCharactersStatusListInWord(String target, String input) {
     input = input.toLowerCase();
@@ -221,8 +217,10 @@ class SetupWordBoard {
   }
 
   void _notifyGameState(GameState newGameState) {
+    liveData.gameState.value = const InitialGameState();
     liveData.gameState.value = newGameState;
   }
+
 
   // shorten function ----------------------------------------------------------
 

@@ -1,0 +1,3 @@
+- target word: rabot
+- input word:  robot
+- result:      r,b,t - show green and o(first) indicate yellow

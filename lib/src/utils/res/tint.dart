@@ -4,6 +4,7 @@ class Tint{
 
   static const Color main_color = Colors.deepOrangeAccent;
   static const Color THEME_COLOR = Colors.blueGrey;
+  static const Color THEME_COLOR_REVERSE = Colors.white;
 
   static const Color button_color = Colors.blueGrey;
 

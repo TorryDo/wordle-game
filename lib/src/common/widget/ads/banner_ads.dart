@@ -14,6 +14,6 @@ class _BannerAdsState extends State<BannerAds> {
   }
 
   Widget _widget(){
-    return Container(color: Colors.red.withAlpha(10));
+    return Container(color: Colors.red.withAlpha(5));
   }
 }

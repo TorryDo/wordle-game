@@ -8,5 +8,7 @@ abstract class WordListDatabase{
 
   Future<String> getRandomWord();
 
+  Future<String> getTargetWord();
+
 
 }

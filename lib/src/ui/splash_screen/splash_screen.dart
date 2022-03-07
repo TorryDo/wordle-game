@@ -11,18 +11,24 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  SplashScreenController? _splashScreenController;
+  SplashScreenController? _controller;
 
   @override
   void initState() {
     super.initState();
-    _splashScreenController ??= Get.find<SplashScreenController>();
-    _splashScreenController?.onInitState();
+    _controller ??= Get.find<SplashScreenController>();
+    _controller?.onInitState();
+  }
+
+  @override
+  void dispose() {
+    _controller?.onDispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _splashScreenController?.onBuildState();
+    _controller?.onBuildState();
     return _screen();
   }
 

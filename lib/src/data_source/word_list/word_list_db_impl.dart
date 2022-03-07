@@ -14,6 +14,8 @@ class WordListDataBaseImpl implements WordListDatabase {
 
   final Random random = Random();
 
+  String _targetWord = "";
+
   WordListDataBaseImpl() {
     _loadFileToLocalList();
   }
@@ -39,20 +41,18 @@ class WordListDataBaseImpl implements WordListDatabase {
   @override
   Future<String> getRandomWord() async {
     if (_wordCollection.value.isNotEmpty) {
-      String str =
+      _targetWord =
           _wordCollection.value[random.nextInt(_wordCollection.value.length)];
-      dev.log(str);
-      return str;
+      dev.log(_targetWord);
+      return _targetWord;
     }
 
     Completer completer = Completer();
 
     _wordCollection.observe((stringList) {
-      if(completer.isCompleted) return;
-      completer.complete(
-          stringList[random.nextInt(_wordCollection.value.length)]
-      );
-
+      if (completer.isCompleted) return;
+      completer
+          .complete(stringList[random.nextInt(_wordCollection.value.length)]);
     });
 
     String str = (await completer.future).toString();
@@ -60,6 +60,11 @@ class WordListDataBaseImpl implements WordListDatabase {
     dev.log(str);
 
     return str;
+  }
+
+  @override
+  Future<String> getTargetWord() async{
+    return _targetWord;
   }
 
   // private -------------------------------------------------------------------
@@ -75,4 +80,6 @@ class WordListDataBaseImpl implements WordListDatabase {
   // test ----------------------------------------------------------------------
 
   get getWordsDB => _wordCollection.value;
+
+
 }

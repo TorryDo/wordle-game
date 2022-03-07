@@ -3,4 +3,6 @@ abstract class WordListRepository {
 
   Future<String> getRandomWord();
 
+  Future<String> getTargetWord();
+
 }

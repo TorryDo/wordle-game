@@ -27,9 +27,13 @@ extension ConvertToCharacterStateList on List<String> {
     final mList = map((e) => InitialCharacterState(e));
     return mList.toList();
   }
+
+  void toCharStateListFrom({
+    required String targetWord,
+  }) {
+    var wordLength = targetWord.length;
+    var stringList = this;
+
+    // do
+  }
 }
-
-
-
-
-

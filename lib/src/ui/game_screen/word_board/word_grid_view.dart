@@ -31,12 +31,8 @@ class _WordGridViewState extends State<WordGridView> {
   @override
   void initState() {
     super.initState();
-
-    var itemNumber = (widget.wordLength + 1) * widget.wordLength;
-
     _gameScreenController = Get.find<GameScreenController>();
 
-    _gameScreenController.setupWordBoard?.setupTheGame(itemNumber, widget.wordLength);
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:wordle_game/src/data_source/word_list/word_list_repository.dart'
 class WordListRepositoryImpl extends WordListRepository {
   final WordListDatabase wordListDatabase;
 
-  WordListRepositoryImpl(this.wordListDatabase);
+  WordListRepositoryImpl({required this.wordListDatabase});
 
   /// override -----------------------------------------------------------------
 
@@ -17,4 +17,12 @@ class WordListRepositoryImpl extends WordListRepository {
   Future<String> getRandomWord() {
     return wordListDatabase.getRandomWord();
   }
+
+  @override
+  Future<String> getTargetWord() {
+    return wordListDatabase.getTargetWord();
+  }
+
+
+
 }

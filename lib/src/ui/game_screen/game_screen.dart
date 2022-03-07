@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wordle_game/src/common/class/my_toast.dart';
+import 'package:wordle_game/src/common/interface/ui_notifier.dart';
+import 'package:wordle_game/src/common/widget/ads/banner_ads.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
-import 'package:wordle_game/src/utils/logger.dart';
-
-import '../../common/widget/ads/banner_ads.dart';
-import '../../utils/constants.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -17,11 +16,8 @@ class GameScreen extends StatefulWidget {
   _GameScreenState createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
-  final _logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((GameScreen).toString());
-
+class _GameScreenState extends State<GameScreen>
+    with UINotifier, WidgetsBindingObserver {
   GameScreenController? _gameScreenController;
 
   // lifecycle -----------------------------------------------------------------
@@ -29,8 +25,10 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
     _gameScreenController ??= Get.find<GameScreenController>();
     _gameScreenController?.onInitState();
+    _gameScreenController?.registerUINotifier(this);
   }
 
   @override
@@ -42,12 +40,18 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void dispose() {
     _gameScreenController?.onDispose();
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _gameScreenController?.lastLifecycleState.value = state;
   }
 
   // widgets -------------------------------------------------------------------
 
-  Widget _safeAreaPage() => SafeArea(child: _page());
+  Widget _safeAreaPage() => SafeArea(child: Scaffold(body: _page()));
 
   Widget _page() {
     var actionBarHeight = 70.0;
@@ -64,9 +68,10 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-                width: double.infinity,
-                height: actionBarHeight,
-                child: _actionBar()),
+              width: double.infinity,
+              height: actionBarHeight,
+              child: _topBar(),
+            ),
             Flexible(
                 flex: gridFlex, fit: FlexFit.tight, child: _wordGridView()),
             Flexible(
@@ -79,7 +84,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _actionBar() {
+  Widget _topBar() {
     return const TopBar();
   }
 
@@ -91,8 +96,12 @@ class _GameScreenState extends State<GameScreen> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: marginHorizontal),
-          child: WordGridView(wordLength: 5, width: wordGridViewWidth)),
+        padding: EdgeInsets.symmetric(horizontal: marginHorizontal),
+        child: WordGridView(
+          wordLength: _gameScreenController?.wordLength.value ?? 5,
+          width: wordGridViewWidth,
+        ),
+      ),
     );
   }
 
@@ -113,5 +122,26 @@ class _GameScreenState extends State<GameScreen> {
 
   void _clickedFromKeyboard(int ascii) {
     _gameScreenController?.setupWordBoard?.type(ascii);
+  }
+
+  // ui notifier ---------------------------------------------------------------
+  @override
+  void showSnackBar({String? label, String? content}) {
+    final snackBar = SnackBar(
+      content: Text(content ?? 'Yay! A SnackBar!'),
+      action: SnackBarAction(
+        label: label ?? 'Undo',
+        onPressed: () {
+          // Some code to undo the change.
+        },
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  @override
+  void showToast({String? message}) {
+    MyToast.makeText(message ?? "null");
   }
 }

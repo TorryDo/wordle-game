@@ -1,20 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:wordle_game/src/provider/text_styles.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 
+import '../../../common/provider/text_styles.dart';
 import '../../../utils/res/dimens.dart';
 import '../../../utils/res/tint.dart';
 
 class KeyBoardButton extends StatefulWidget {
-
   final CharacterState characterState;
   final double? width;
   final double? height;
   final Color? color;
   final Function(int ascii)? onClick;
-
 
   const KeyBoardButton({
     Key? key,
@@ -73,7 +69,7 @@ class _KeyBoardButtonState extends State<KeyBoardButton> {
       return Tint.GREEN_CHAR;
     } else if (widget.characterState is RightCharacterWrongPositionState) {
       return Tint.YELLOW_CHAR;
-    }else if(widget.characterState is WrongCharacterState){
+    } else if (widget.characterState is WrongCharacterState) {
       return Colors.transparent;
     }
     return widget.color;
