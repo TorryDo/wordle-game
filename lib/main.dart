@@ -9,6 +9,7 @@ import 'package:wordle_game/src/common/provider/theme_provider.dart';
 import 'package:wordle_game/src/data_source/local_db/key_value/get_data/key_value_accessor.dart';
 import 'package:wordle_game/src/data_source/local_db/key_value/modal/save_game_model.dart';
 import 'package:wordle_game/src/ui/end_game_screen/end_game_screen.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/game_screen.dart';
 import 'package:wordle_game/src/ui/routes.dart';
 import 'package:wordle_game/src/ui/splash_screen/splash_screen.dart';
@@ -24,6 +25,11 @@ void main() async {
 Future _initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(SaveGameModelAdapter());
+  // Hive.registerAdapter(CharacterStateAdapter());
+  Hive.registerAdapter(InitialCharacterStateAdapter());
+  Hive.registerAdapter(RightCharacterRightPositionStateAdapter());
+  Hive.registerAdapter(RightCharacterWrongPositionStateAdapter());
+  Hive.registerAdapter(WrongCharacterStateAdapter());
   await Hive.openBox<SaveGameModel>(KeyValueAccessor.DEFAULT_BOX_NAME);
 
 }

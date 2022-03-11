@@ -13,12 +13,12 @@ var _stringList1 = [
   'b',
   'c',
   'e',
-  SetupWordBoard.EMPTY_CHAR,
-  SetupWordBoard.EMPTY_CHAR,
-  SetupWordBoard.EMPTY_CHAR,
-  SetupWordBoard.EMPTY_CHAR,
-  SetupWordBoard.EMPTY_CHAR,
-  SetupWordBoard.EMPTY_CHAR
+  SetupWordBoard.SPACE_CHAR,
+  SetupWordBoard.SPACE_CHAR,
+  SetupWordBoard.SPACE_CHAR,
+  SetupWordBoard.SPACE_CHAR,
+  SetupWordBoard.SPACE_CHAR,
+  SetupWordBoard.SPACE_CHAR
 ];
 var _stringList2 = ['a', 'b', 'c', 'l', 'e', 'h'];
 var _stringList3 = ['a', 'b', 'c', 'l', 'e', 'h', 'a', 'b', 'c', 'l', 'e', 'h'];
@@ -28,12 +28,12 @@ var _stringList1Result = [
   const InitialCharacterState('b'),
   const InitialCharacterState('c'),
   const InitialCharacterState('e'),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
-  const InitialCharacterState(SetupWordBoard.EMPTY_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
+  const InitialCharacterState(SetupWordBoard.SPACE_CHAR),
 ];
 
 var _stringList2Result = [

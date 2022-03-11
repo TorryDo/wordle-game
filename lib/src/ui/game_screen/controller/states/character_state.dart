@@ -1,31 +1,46 @@
+import 'package:hive/hive.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
-abstract class CharacterState {
-  static const WRONG_CHAR = 0;
-  static const RIGHT_CHAR_RIGHT_PLACE = 2;
-  static const RIGHT_CHAR_WRONG_PLACE = 1;
-  static const PLACE_HOLDER_CHAR = '-';
+part 'character_state.g.dart';
 
+
+abstract class CharacterState {
+
+  @HiveField(0)
   final String char;
 
   const CharacterState(this.char);
 }
 
+@HiveType(typeId: 2)
 class InitialCharacterState extends CharacterState {
   const InitialCharacterState(String char) : super(char);
 }
 
+@HiveType(typeId: 3)
 class RightCharacterRightPositionState extends CharacterState {
   const RightCharacterRightPositionState(String char) : super(char);
 }
 
+@HiveType(typeId: 4)
 class RightCharacterWrongPositionState extends CharacterState {
   const RightCharacterWrongPositionState(String char) : super(char);
 }
 
+@HiveType(typeId: 5)
 class WrongCharacterState extends CharacterState {
   const WrongCharacterState(String char) : super(char);
+}
+
+class CharStateAlias{
+  static const STATE_NULL = -1;
+  static const INITIAL = 0;
+  static const WRONG_CHAR = 1;
+  static const RIGHT_CHAR_WRONG_POSITION = 2;
+  static const RIGHT_CHAR_RIGHT_POSITION = 3;
+
+  static const PLACE_HOLDER_CHAR = '-';
 }
 
 // related func  ---------------------------------------------------------------
@@ -43,7 +58,7 @@ extension ConvertToCharacterStateList on List<String> {
     var stringList = this;
 
     var lastCharPosition =
-        stringList.lastIndexWhere((c) => c != SetupWordBoard.EMPTY_CHAR);
+        stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
 
     // action -------------------------------
 
@@ -63,7 +78,7 @@ extension ConvertToCharacterStateList on List<String> {
         }
         stringList.clear();
       }
-      lastCharPosition = stringList.lastIndexWhere((c) => c != SetupWordBoard.EMPTY_CHAR);
+      lastCharPosition = stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
     }
 
     return results;
@@ -83,13 +98,13 @@ extension ConvertFromCharListToCharState on List<CharacterState> {
 extension ConvertIntToState on String {
   CharacterState toStateFrom(int intState) {
     switch (intState) {
-      case CharacterState.WRONG_CHAR:
+      case CharStateAlias.WRONG_CHAR:
         return WrongCharacterState(this);
         break;
-      case CharacterState.RIGHT_CHAR_RIGHT_PLACE:
+      case CharStateAlias.RIGHT_CHAR_RIGHT_POSITION:
         return RightCharacterRightPositionState(this);
         break;
-      case CharacterState.RIGHT_CHAR_WRONG_PLACE:
+      case CharStateAlias.RIGHT_CHAR_WRONG_POSITION:
         return RightCharacterWrongPositionState(this);
         break;
       default:
@@ -102,13 +117,13 @@ extension ConvertIntToState on String {
 List<int> getCharactersStatusListInWord(String target, String input) {
   input = input.toLowerCase();
 
-  List<int> rs = List.filled(target.length, CharacterState.WRONG_CHAR);
+  List<int> rs = List.filled(target.length, CharStateAlias.WRONG_CHAR);
 
   List<String> targetChars = target.split('');
 
   for (int i = 0; i < target.length; i++) {
     if (!target.contains(input[i])) {
-      input = input.replaceCharAt(i, CharacterState.PLACE_HOLDER_CHAR);
+      input = input.replaceCharAt(i, CharStateAlias.PLACE_HOLDER_CHAR);
     }
   }
 
@@ -118,12 +133,12 @@ List<int> getCharactersStatusListInWord(String target, String input) {
     if (!targetChars.contains(input[i])) continue;
     targetChars.remove(input[i]);
 
-    if (input[i] == CharacterState.PLACE_HOLDER_CHAR) continue;
+    if (input[i] == CharStateAlias.PLACE_HOLDER_CHAR) continue;
     if (target[i] == input[i]) {
-      rs[i] = CharacterState.RIGHT_CHAR_RIGHT_PLACE;
+      rs[i] = CharStateAlias.RIGHT_CHAR_RIGHT_POSITION;
       continue;
     }
-    rs[i] = CharacterState.RIGHT_CHAR_WRONG_PLACE;
+    rs[i] = CharStateAlias.RIGHT_CHAR_WRONG_POSITION;
   }
 
   return rs;

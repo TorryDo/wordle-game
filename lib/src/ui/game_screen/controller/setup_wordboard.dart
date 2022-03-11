@@ -10,7 +10,6 @@ import '../../../utils/constants.dart';
 import '../../../utils/logger.dart';
 
 class SetupWordBoard {
-
   final _logger = Logger()
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
       .setTag((SetupWordBoard).toString());
@@ -18,13 +17,29 @@ class SetupWordBoard {
   final wordListRepository = GetIt.I.get<WordListRepository>();
   final GameObservableData liveData;
 
-  static const String EMPTY_CHAR = ' ';
-  var wordLength = 0;
-  var _currentPositionInWord = 0;
+  static const String SPACE_CHAR = ' ';
 
-  SetupWordBoard(this.liveData); /* {
-    _currentPositionInWord = _getCurrentPositionInWord();
-  }*/
+  int get wordLength {
+    return liveData.wordLength.value;
+  }
+
+  set wordLength(int n) {
+    liveData.wordLength.value = n;
+  }
+
+  int? _currentPositionInWord;
+
+  int get currentPositionInWord {
+    _currentPositionInWord ??= _getCurrentPositionInWord();
+    // _logger.d("currentPosInWOrd = ${_currentPositionInWord!}");
+    return _currentPositionInWord!;
+  }
+
+  set currentPositionInWord(int n) {
+    _currentPositionInWord = n;
+  }
+
+  SetupWordBoard(this.liveData);
 
   String get targetWord => liveData.targetWord.value;
 
@@ -32,25 +47,31 @@ class SetupWordBoard {
     liveData.targetWord.value = newValue;
   }
 
-  // int _getCurrentPositionInWord() {
-  //   var emptyCharPos = _findEmptyCharPosition();
-  //   if(emptyCharPos)
-  //   return emptyCharPos % targetWord.length;
-  // }
+  int _getCurrentPositionInWord() {
+    int pointer = _findLastCharPositionOfInitialState();
+    if (pointer < 0) return 0;
+    return (pointer + 1) % targetWord.length;
+  }
 
   // func ----------------------------------------------------------------------
 
   void initWordBoard(int itemNumber, int wordLength) {
     this.wordLength = wordLength;
     liveData.gameBoardStateList.value =
-        List.filled(itemNumber, const InitialCharacterState(EMPTY_CHAR));
+        List.filled(itemNumber, const InitialCharacterState(SPACE_CHAR));
   }
 
   // get callback from keyboard widget
   void type(int ascii) {
+    // _currentPositionInWord ??= _getCurrentPositionInWord();
+
     /// 3 input types
     void _inputAtoZ() {
-      if (!_isEndOfWord(wordLength, _currentPositionInWord)) {
+      if (_isEndOfWord()) {
+        // when the cursor in the end, do nothing
+        _notifyTypingState(const TailOfWordState());
+        return;
+      } else {
         int lastEmptyChar = _findEmptyCharPosition();
         if (lastEmptyChar < 0) return;
 
@@ -59,19 +80,15 @@ class SetupWordBoard {
 
         liveData.typeState.value = TypingState(ascii: ascii);
 
-        _currentPositionInWord++;
-      } else {
-        // when the cursor in the end, do nothing
-        _notifyTypingState(const TailOfWordState());
-        return;
+        currentPositionInWord++;
       }
     }
 
     void _inputDelete() {
-      if (!_isStartOfWord(_currentPositionInWord)) {
+      if (!_isStartOfWord()) {
         liveData.gameBoardStateList[_findLastCharPosition()] =
-        const InitialCharacterState(EMPTY_CHAR);
-        _currentPositionInWord--;
+            const InitialCharacterState(SPACE_CHAR);
+        currentPositionInWord--;
         _notifyTypingState(const DeleteState());
         return;
       } else {
@@ -87,7 +104,7 @@ class SetupWordBoard {
      *
      */
     void _inputEnter() {
-      if (_isEndOfWord(wordLength, _currentPositionInWord)) {
+      if (_isEndOfWord()) {
         final tempInputCompletedWord = getCompleteWord();
 
         _isExistedWord(tempInputCompletedWord, (isCorrect) {
@@ -98,19 +115,19 @@ class SetupWordBoard {
             final tempLastChar = _findLastCharPosition();
 
             for (int i = 0; i < wordLength; i++) {
-              if (statusList[i] == CharacterState.RIGHT_CHAR_RIGHT_PLACE) {
+              if (statusList[i] == CharStateAlias.RIGHT_CHAR_RIGHT_POSITION) {
                 _notifyToRightCharRightPlaceState(
                     tempLastChar - wordLength + 1 + i);
-              } else if (statusList[i] == CharacterState.WRONG_CHAR) {
+              } else if (statusList[i] == CharStateAlias.WRONG_CHAR) {
                 _notifyWrongCharState(tempLastChar - wordLength + 1 + i);
-              } else
-              if (statusList[i] == CharacterState.RIGHT_CHAR_WRONG_PLACE) {
+              } else if (statusList[i] ==
+                  CharStateAlias.RIGHT_CHAR_WRONG_POSITION) {
                 _notifyToRightCharWrongPlaceState(
                     tempLastChar - wordLength + 1 + i);
               }
             }
 
-            _currentPositionInWord = 0;
+            currentPositionInWord = 0;
 
             _notifyTypingState(EnterState(
                 wordStates: liveData.gameBoardStateList.sublist(
@@ -146,14 +163,13 @@ class SetupWordBoard {
 
     // _logger.d(liveData.gameBoardStateList.toString());
     // _logger.d(liveData.gameBoardStateList.lastIndexWhere((c) => c.char != EMPTY_CHAR).toString());
-
   }
 
   void resetWordBoard() {
-        (i) {
-      liveData.gameBoardStateList[i] = const InitialCharacterState(EMPTY_CHAR);
+    (i) {
+      liveData.gameBoardStateList[i] = const InitialCharacterState(SPACE_CHAR);
     }.repeat(liveData.gameBoardStateList.length);
-    _currentPositionInWord = 0;
+    currentPositionInWord = 0;
     setupTargetWord();
   }
 
@@ -173,7 +189,6 @@ class SetupWordBoard {
   }
 
   /// private ------------------------------------------------------------------
-
 
   bool _isMatchedTargetWord(String word) {
     return word.toLowerCase() == liveData.targetWord.value;
@@ -213,19 +228,33 @@ class SetupWordBoard {
     liveData.gameState.value = newGameState;
   }
 
-
   // shorten function ----------------------------------------------------------
 
   bool _isLastTry() =>
       _findLastCharPosition() + 1 >= liveData.gameBoardStateList.length;
 
-  bool _isEndOfWord(int wordLength, int position) => position == wordLength;
+  bool _isEndOfWord() {
+    _logger.d("$currentPositionInWord --- $wordLength");
+    return currentPositionInWord >= wordLength;
+  }
 
-  bool _isStartOfWord(int position) => position <= 0;
+  bool _isStartOfWord() {
+    return currentPositionInWord <= 0;
+  }
+
+  int _findLastCharPositionOfInitialState() {
+    int rs = _findLastCharPosition();
+    if (rs < 0) return -1;
+    if (liveData.gameBoardStateList[rs] is InitialCharacterState) {
+      return rs;
+    }
+
+    return -1;
+  }
 
   int _findEmptyCharPosition() =>
-      liveData.gameBoardStateList.indexWhere((c) => c.char == EMPTY_CHAR);
+      liveData.gameBoardStateList.indexWhere((c) => c.char == SPACE_CHAR);
 
   int _findLastCharPosition() =>
-      liveData.gameBoardStateList.lastIndexWhere((c) => c.char != EMPTY_CHAR);
+      liveData.gameBoardStateList.lastIndexWhere((c) => c.char != SPACE_CHAR);
 }

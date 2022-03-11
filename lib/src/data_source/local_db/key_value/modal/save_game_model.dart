@@ -10,6 +10,7 @@ class SaveGameModel extends HiveObject {
   late String targetWord;
 
   @HiveField(1)
-  late List<String> gameBoardStateList;
+  late List<CharacterState> gameBoardStateList;
 
 }
+

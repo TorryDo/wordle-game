@@ -22,9 +22,9 @@ class SetupSaveGame{
 
     liveData.targetWord.value = liveData.saveGameModel.value!.targetWord;
     liveData.wordLength.value = liveData.saveGameModel.value!.targetWord.length;
-    liveData.gameBoardStateList.value = liveData.saveGameModel.value!.gameBoardStateList
-        .toStateListFrom(target: liveData.saveGameModel.value!.targetWord);
+    liveData.gameBoardStateList.value = liveData.saveGameModel.value!.gameBoardStateList;
 
+    // _logger.d("targetWord = ${liveData.targetWord}");
     // _logger.d(liveData.gameBoardStateList.toString());
   }
 
@@ -32,13 +32,13 @@ class SetupSaveGame{
     if (liveData.saveGameModel.value == null) {
       var newSaveGameModel = SaveGameModel()
         ..targetWord = liveData.targetWord.value
-        ..gameBoardStateList = liveData.gameBoardStateList.toStringList();
+        ..gameBoardStateList = liveData.gameBoardStateList;
 
       liveData.keyValueRepository.createGameData(newSaveGameModel);
     } else {
       liveData.saveGameModel.value!
         ..targetWord = liveData.targetWord.value
-        ..gameBoardStateList = liveData.gameBoardStateList.toStringList();
+        ..gameBoardStateList = liveData.gameBoardStateList;
 
       liveData.saveGameModel.value!.save();
     }

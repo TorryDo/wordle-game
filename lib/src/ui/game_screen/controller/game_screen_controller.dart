@@ -26,7 +26,7 @@ class GameScreenController extends GameObservableData
   SetupSaveGame? setupSaveGame;
 
   GameScreenController() {
-    // setupSaveGame = SetupSaveGame(this);
+    setupSaveGame = SetupSaveGame(this);
     setupWordBoard = SetupWordBoard(this);
     setupKeyboard = SetupKeyboard(this);
 
@@ -45,20 +45,21 @@ class GameScreenController extends GameObservableData
     });
 
     typeState.stream.listen((typeState) {
+      _logger.d(typeState.toString());
       if (typeState is EnterState) {
         setupKeyboard?.updateStateBasedOnCharacters(typeState);
       }
     });
 
-    // lastLifecycleState.stream.listen((appState) {
-    //   if (appState == AppLifecycleState.inactive) {
-    //     _logger.d(appState.toString());
-    //
-    //     setupSaveGame?.save();
-    //
-    //     _logger.d("save in on paused");
-    //   }
-    // });
+    lastLifecycleState.stream.listen((appState) {
+      if (appState == AppLifecycleState.inactive) {
+        _logger.d(appState.toString());
+
+        setupSaveGame?.save();
+
+        _logger.d("save in on paused");
+      }
+    });
 
     // gameBoardStateList.stream.listen((charList) {
     //   _logger.d(charList.toString());
@@ -67,12 +68,12 @@ class GameScreenController extends GameObservableData
 
   void loadPreviousGameIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
-    // if (saveGameModel.value != null) {
-    //   setupSaveGame?.setupFromPreviousGameState();
-    // } else {
-    //   setupNewGame();
-    // }
-    setupNewGame();
+    if (saveGameModel.value != null) {
+      setupSaveGame?.setupFromPreviousGameState();
+    } else {
+      setupNewGame();
+    }
+    // setupNewGame();
   }
 
   void _navigateToEndGameScreen(bool won) async {
