@@ -31,4 +31,9 @@ class HiveKeyValueImpl implements KeyValueAccessor {
   void createGameData(SaveGameModel gameModel) {
     box.add(gameModel);
   }
+
+  @override
+  void deleteGameData() {
+    box.deleteAt(0);
+  }
 }

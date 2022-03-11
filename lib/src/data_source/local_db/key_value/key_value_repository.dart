@@ -8,5 +8,7 @@ abstract class KeyValueRepository{
 
   void createGameData(SaveGameModel gameModel);
 
+  void deleteGameData();
+
 
 }

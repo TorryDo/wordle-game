@@ -9,4 +9,6 @@ abstract class KeyValueAccessor {
   void updateGameData(SaveGameModel gameModel);
 
   void createGameData(SaveGameModel gameModel);
+
+  void deleteGameData();
 }

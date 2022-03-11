@@ -24,6 +24,18 @@ extension Repeat on Function(int i) {
 
 extension ReplaceChar on String {
   String replaceCharAt(int index, String newChar) {
-    return this.substring(0, index) + newChar + this.substring(index + 1);
+    return substring(0, index) + newChar + substring(index + 1);
   }
+
+}
+
+extension ListStringToWord on List<String>{
+  String toWord(){
+    var result = '';
+    for(var c in this){
+      result += c;
+    }
+    return result;
+  }
+
 }

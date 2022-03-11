@@ -18,7 +18,7 @@ class SaveGameModelAdapter extends TypeAdapter<SaveGameModel> {
     };
     return SaveGameModel()
       ..targetWord = fields[0] as String
-      ..gameBoardStateList = (fields[1] as List).cast<CharacterState>();
+      ..gameBoardStateList = (fields[1] as List).cast<String>();
   }
 
   @override

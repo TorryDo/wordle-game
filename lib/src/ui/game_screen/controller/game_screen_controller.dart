@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:wordle_game/src/common/class/my_toast.dart';
 import 'package:wordle_game/src/common/interface/ui_notifier.dart';
 import 'package:wordle_game/src/common/interface/widget_lifecycle.dart';
-import 'package:wordle_game/src/data_source/local_db/key_value/modal/save_game_model.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_keyboard.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/setup_save_game.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
@@ -23,26 +23,14 @@ class GameScreenController extends GameObservableData
 
   SetupWordBoard? setupWordBoard;
   SetupKeyboard? setupKeyboard;
+  SetupSaveGame? setupSaveGame;
 
   GameScreenController() {
+    setupSaveGame = SetupSaveGame(this);
     setupWordBoard = SetupWordBoard(this);
     setupKeyboard = SetupKeyboard(this);
-    _loadPreviousGameIfExist();
-  }
 
-// lifecycle -----------------------------------------------------------------
-
-  @override
-  void onInitState() {
-    _observe();
-  }
-
-  @override
-  void onBuildState() {}
-
-  @override
-  void onDispose() {
-    MyToast.makeText("onDispose");
+    loadPreviousGameIfExist();
   }
 
 // private function ----------------------------------------------------------
@@ -62,45 +50,30 @@ class GameScreenController extends GameObservableData
       }
     });
 
-    lastLifecycleState.stream.listen((appState) {
-      if (appState == AppLifecycleState.inactive) {
-        _logger.d(appState.toString());
+    // lastLifecycleState.stream.listen((appState) {
+    //   if (appState == AppLifecycleState.inactive) {
+    //     _logger.d(appState.toString());
+    //
+    //     setupSaveGame?.save();
+    //
+    //     _logger.d("save in on paused");
+    //   }
+    // });
 
-        var newSaveGameModel = SaveGameModel()
-          ..targetWord = targetWord.value
-          ..gameBoardStateList = gameBoardStateList;
-
-        if (saveGameModel.value == null) {
-          keyValueRepository.createGameData(newSaveGameModel);
-        } else {
-          saveGameModel.value!
-            ..targetWord = targetWord.value
-            ..gameBoardStateList = gameBoardStateList;
-
-          saveGameModel.value!.save();
-        }
-      }
-    });
+    // gameBoardStateList.stream.listen((charList) {
+    //   _logger.d(charList.toString());
+    // });
   }
 
-  /// --------------------------------------------------
-
-  void _loadPreviousGameIfExist() async {
+  void loadPreviousGameIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
-    if (saveGameModel.value != null) {
-      setupFromPreviousGameState();
-    } else {
-      setupNewGame();
-    }
+    // if (saveGameModel.value != null) {
+    //   setupSaveGame?.setupFromPreviousGameState();
+    // } else {
+    //   setupNewGame();
+    // }
+    setupNewGame();
   }
-
-  void setupFromPreviousGameState() async {
-    wordLength.value = saveGameModel.value!.targetWord.length;
-    targetWord.value = saveGameModel.value!.targetWord;
-    gameBoardStateList.value = saveGameModel.value!.gameBoardStateList;
-  }
-
-  /// ---------------------------------------------------
 
   void _navigateToEndGameScreen(bool won) async {
     var fakeInputWord = "input";
@@ -122,10 +95,24 @@ class GameScreenController extends GameObservableData
     var itemNumber = (wordLength.value + 1) * wordLength.value;
     setupWordBoard?.initWordBoard(itemNumber, wordLength.value);
     setupWordBoard?.setupTargetWord();
+    setupSaveGame?.deleteSaveGame();
   }
 
   void resetTheGame() {
     setupWordBoard?.resetWordBoard();
     setupKeyboard?.resetKeyboard();
+    setupSaveGame?.deleteSaveGame();
+  }
+
+  // lifecycle -----------------------------------------------------------------
+
+  @override
+  void onInitState() {
+    _observe();
+  }
+
+  @override
+  void onDispose() {
+    MyToast.makeText("onDispose");
   }
 }

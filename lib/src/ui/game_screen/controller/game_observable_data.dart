@@ -18,7 +18,7 @@ class GameObservableData extends GetxController {
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', // start: 0, end: 10
     'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',      // start: 10, end: 19
     'Z', 'X', 'C', 'V', 'B', 'N', 'M'                 // start: 19, end: 26
-  ].toCharacterStateList());
+  ].toInitialCharacterStateList());
 
   final Rx<TypeState> typeState = Rx<TypeState>(const InitialState());
 
