@@ -26,7 +26,7 @@ class GameScreenController extends GameObservableData
   SetupSaveGame? setupSaveGame;
 
   GameScreenController() {
-    setupSaveGame = SetupSaveGame(this);
+    // setupSaveGame = SetupSaveGame(this);
     setupWordBoard = SetupWordBoard(this);
     setupKeyboard = SetupKeyboard(this);
 

@@ -22,7 +22,21 @@ class SetupWordBoard {
   var wordLength = 0;
   var _currentPositionInWord = 0;
 
-  SetupWordBoard(this.liveData);
+  SetupWordBoard(this.liveData); /* {
+    _currentPositionInWord = _getCurrentPositionInWord();
+  }*/
+
+  String get targetWord => liveData.targetWord.value;
+
+  set targetWord(String newValue) {
+    liveData.targetWord.value = newValue;
+  }
+
+  // int _getCurrentPositionInWord() {
+  //   var emptyCharPos = _findEmptyCharPosition();
+  //   if(emptyCharPos)
+  //   return emptyCharPos % targetWord.length;
+  // }
 
   // func ----------------------------------------------------------------------
 
@@ -37,7 +51,7 @@ class SetupWordBoard {
     /// 3 input types
     void _inputAtoZ() {
       if (!_isEndOfWord(wordLength, _currentPositionInWord)) {
-        int lastEmptyChar = _findLastEmptyCharPosition();
+        int lastEmptyChar = _findEmptyCharPosition();
         if (lastEmptyChar < 0) return;
 
         liveData.gameBoardStateList[lastEmptyChar] =
@@ -56,7 +70,7 @@ class SetupWordBoard {
     void _inputDelete() {
       if (!_isStartOfWord(_currentPositionInWord)) {
         liveData.gameBoardStateList[_findLastCharPosition()] =
-            const InitialCharacterState(EMPTY_CHAR);
+        const InitialCharacterState(EMPTY_CHAR);
         _currentPositionInWord--;
         _notifyTypingState(const DeleteState());
         return;
@@ -89,7 +103,8 @@ class SetupWordBoard {
                     tempLastChar - wordLength + 1 + i);
               } else if (statusList[i] == CharacterState.WRONG_CHAR) {
                 _notifyWrongCharState(tempLastChar - wordLength + 1 + i);
-              } else if (statusList[i] == CharacterState.RIGHT_CHAR_WRONG_PLACE) {
+              } else
+              if (statusList[i] == CharacterState.RIGHT_CHAR_WRONG_PLACE) {
                 _notifyToRightCharWrongPlaceState(
                     tempLastChar - wordLength + 1 + i);
               }
@@ -135,7 +150,7 @@ class SetupWordBoard {
   }
 
   void resetWordBoard() {
-    (i) {
+        (i) {
       liveData.gameBoardStateList[i] = const InitialCharacterState(EMPTY_CHAR);
     }.repeat(liveData.gameBoardStateList.length);
     _currentPositionInWord = 0;
@@ -208,7 +223,7 @@ class SetupWordBoard {
 
   bool _isStartOfWord(int position) => position <= 0;
 
-  int _findLastEmptyCharPosition() =>
+  int _findEmptyCharPosition() =>
       liveData.gameBoardStateList.indexWhere((c) => c.char == EMPTY_CHAR);
 
   int _findLastCharPosition() =>
