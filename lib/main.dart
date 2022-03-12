@@ -3,7 +3,6 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wordle_game/di.dart';
 import 'package:wordle_game/src/common/provider/theme_provider.dart';
 import 'package:wordle_game/src/data_source/local_db/key_value/get_data/key_value_accessor.dart';

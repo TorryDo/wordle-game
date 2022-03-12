@@ -1,5 +1,3 @@
-import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
-
 abstract class TypeState {
   const TypeState();
 }
@@ -15,9 +13,9 @@ class TypingState extends TypeState {
 }
 
 class EnterState extends TypeState {
-  final List<CharacterState> wordStates;
+  // final List<CharacterState> wordStates;
 
-  const EnterState({required this.wordStates});
+  const EnterState();
 }
 
 class DeleteState extends TypeState {

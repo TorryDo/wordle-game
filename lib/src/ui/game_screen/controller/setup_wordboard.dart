@@ -129,10 +129,10 @@ class SetupWordBoard {
 
             currentPositionInWord = 0;
 
-            _notifyTypingState(EnterState(
-                wordStates: liveData.gameBoardStateList.sublist(
+            _notifyTypingState(EnterState());
+            /*wordStates: liveData.gameBoardStateList.sublist(
                     _findLastCharPosition() - wordLength + 1,
-                    _findLastCharPosition() + 1)));
+                    _findLastCharPosition() + 1)*/
 
             if (_isMatchedTargetWord(tempInputCompletedWord)) {
               /// YOU WIN THIS GAME

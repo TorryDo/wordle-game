@@ -44,12 +44,16 @@ class GameScreenController extends GameObservableData
       }
     });
 
-    typeState.stream.listen((typeState) {
-      _logger.d(typeState.toString());
-      if (typeState is EnterState) {
-        setupKeyboard?.updateStateBasedOnCharacters(typeState);
-      }
-    });
+    // typeState.stream.listen((typeState) {
+    //   _logger.d(typeState.toString());
+    //   if (typeState is EnterState) {
+    //     setupKeyboard?.updateStateBasedOnCharacters(typeState);
+    //   }
+    // });
+
+    // gameBoardStateList.stream.listen((event) {
+    //
+    // });
 
     lastLifecycleState.stream.listen((appState) {
       if (appState == AppLifecycleState.inactive) {
