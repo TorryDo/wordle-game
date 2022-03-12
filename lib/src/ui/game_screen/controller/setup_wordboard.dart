@@ -234,7 +234,7 @@ class SetupWordBoard {
       _findLastCharPosition() + 1 >= liveData.gameBoardStateList.length;
 
   bool _isEndOfWord() {
-    _logger.d("$currentPositionInWord --- $wordLength");
+    // _logger.d("$currentPositionInWord --- $wordLength");
     return currentPositionInWord >= wordLength;
   }
 

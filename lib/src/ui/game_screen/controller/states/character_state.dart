@@ -1,12 +1,9 @@
 import 'package:hive/hive.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
 part 'character_state.g.dart';
 
-
 abstract class CharacterState {
-
   @HiveField(0)
   final String char;
 
@@ -33,7 +30,7 @@ class WrongCharacterState extends CharacterState {
   const WrongCharacterState(String char) : super(char);
 }
 
-class CharStateAlias{
+class CharStateAlias {
   static const STATE_NULL = -1;
   static const INITIAL = 0;
   static const WRONG_CHAR = 1;
@@ -51,38 +48,38 @@ extension ConvertToCharacterStateList on List<String> {
     return mList.toList();
   }
 
-  List<CharacterState> toStateListFrom({
-    required String target,
-  }) {
-    var results = <CharacterState>[];
-    var stringList = this;
-
-    var lastCharPosition =
-        stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
-
-    // action -------------------------------
-
-    while (stringList.isNotEmpty) {
-      if (lastCharPosition >= target.length-1) {
-        var input = stringList.sublist(0, target.length).toWord();
-        var inputStatues = getCharactersStatusListInWord(target, input);
-
-        for (int i = 0; i < target.length; i++) {
-          results.add(input[i].toStateFrom(inputStatues[i]));
-        }
-
-        stringList.removeRange(0, target.length);
-      } else {
-        for (var remainedCharacter in stringList) {
-          results.add(InitialCharacterState(remainedCharacter));
-        }
-        stringList.clear();
-      }
-      lastCharPosition = stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
-    }
-
-    return results;
-  }
+// List<CharacterState> toStateListFrom({
+//   required String target,
+// }) {
+//   var results = <CharacterState>[];
+//   var stringList = this;
+//
+//   var lastCharPosition =
+//       stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
+//
+//   // action -------------------------------
+//
+//   while (stringList.isNotEmpty) {
+//     if (lastCharPosition >= target.length-1) {
+//       var input = stringList.sublist(0, target.length).toWord();
+//       var inputStatues = getCharactersStatusListInWord(target, input);
+//
+//       for (int i = 0; i < target.length; i++) {
+//         results.add(input[i].toStateFrom(inputStatues[i]));
+//       }
+//
+//       stringList.removeRange(0, target.length);
+//     } else {
+//       for (var remainedCharacter in stringList) {
+//         results.add(InitialCharacterState(remainedCharacter));
+//       }
+//       stringList.clear();
+//     }
+//     lastCharPosition = stringList.lastIndexWhere((c) => c != SetupWordBoard.SPACE_CHAR);
+//   }
+//
+//   return results;
+// }
 }
 
 extension ConvertFromCharListToCharState on List<CharacterState> {
@@ -95,24 +92,24 @@ extension ConvertFromCharListToCharState on List<CharacterState> {
   }
 }
 
-extension ConvertIntToState on String {
-  CharacterState toStateFrom(int intState) {
-    switch (intState) {
-      case CharStateAlias.WRONG_CHAR:
-        return WrongCharacterState(this);
-        break;
-      case CharStateAlias.RIGHT_CHAR_RIGHT_POSITION:
-        return RightCharacterRightPositionState(this);
-        break;
-      case CharStateAlias.RIGHT_CHAR_WRONG_POSITION:
-        return RightCharacterWrongPositionState(this);
-        break;
-      default:
-        return InitialCharacterState(this);
-        break;
-    }
-  }
-}
+// extension ConvertIntToState on String {
+//   CharacterState toStateFrom(int intState) {
+//     switch (intState) {
+//       case CharStateAlias.WRONG_CHAR:
+//         return WrongCharacterState(this);
+//         break;
+//       case CharStateAlias.RIGHT_CHAR_RIGHT_POSITION:
+//         return RightCharacterRightPositionState(this);
+//         break;
+//       case CharStateAlias.RIGHT_CHAR_WRONG_POSITION:
+//         return RightCharacterWrongPositionState(this);
+//         break;
+//       default:
+//         return InitialCharacterState(this);
+//         break;
+//     }
+//   }
+// }
 
 List<int> getCharactersStatusListInWord(String target, String input) {
   input = input.toLowerCase();

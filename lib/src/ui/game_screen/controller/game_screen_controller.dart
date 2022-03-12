@@ -73,7 +73,6 @@ class GameScreenController extends GameObservableData
     } else {
       setupNewGame();
     }
-    // setupNewGame();
   }
 
   void _navigateToEndGameScreen(bool won) async {
@@ -96,7 +95,7 @@ class GameScreenController extends GameObservableData
     var itemNumber = (wordLength.value + 1) * wordLength.value;
     setupWordBoard?.initWordBoard(itemNumber, wordLength.value);
     setupWordBoard?.setupTargetWord();
-    setupSaveGame?.deleteSaveGame();
+    if (saveGameModel.value != null) setupSaveGame?.deleteSaveGame();
   }
 
   void resetTheGame() {

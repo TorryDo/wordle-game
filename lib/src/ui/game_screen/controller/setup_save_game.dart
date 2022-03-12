@@ -1,5 +1,4 @@
 import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 
 import '../../../data_source/local_db/key_value/modal/save_game_model.dart';
 import '../../../utils/constants.dart';
@@ -18,14 +17,11 @@ class SetupSaveGame{
   // -----------------------------------------------------------------------
 
   void setupFromPreviousGameState() async {
-    // _logger.d(liveData.saveGameModel.value!.gameBoardStateList.toString());
 
     liveData.targetWord.value = liveData.saveGameModel.value!.targetWord;
     liveData.wordLength.value = liveData.saveGameModel.value!.targetWord.length;
     liveData.gameBoardStateList.value = liveData.saveGameModel.value!.gameBoardStateList;
 
-    // _logger.d("targetWord = ${liveData.targetWord}");
-    // _logger.d(liveData.gameBoardStateList.toString());
   }
 
   void save(){
