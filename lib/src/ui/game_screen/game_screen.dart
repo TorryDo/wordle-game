@@ -21,7 +21,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen>
     with UINotifier, WidgetsBindingObserver {
-  GameScreenController? _gameScreenController;
+  GameScreenController? _controller;
 
   final _logger = Logger()
       .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
@@ -31,29 +31,29 @@ class _GameScreenState extends State<GameScreen>
 
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance?.addObserver(this);
-    _gameScreenController ??= Get.find<GameScreenController>();
-    _gameScreenController?.onInitState();
-    _gameScreenController?.registerUINotifier(this);
+    _controller ??= Get.find<GameScreenController>();
+    _controller?.onInitState();
+    _controller?.registerUINotifier(this);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _gameScreenController?.onBuildState();
+    _controller?.onBuildState();
     return _safeAreaPage();
   }
 
   @override
   void dispose() {
-    _gameScreenController?.onDispose();
+    _controller?.onDispose();
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _gameScreenController?.lastLifecycleState.value = state;
+    _controller?.appLifeCycleState.value = state;
   }
 
   // widgets -------------------------------------------------------------------
@@ -92,7 +92,10 @@ class _GameScreenState extends State<GameScreen>
   }
 
   Widget _topBar() {
-    return const TopBar();
+    return TopBar(
+      onClick: (where){
+        _controller?.navigateToEndGameScreen(true);
+      },);
   }
 
   Widget _wordGridView() {
@@ -105,7 +108,7 @@ class _GameScreenState extends State<GameScreen>
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: marginHorizontal),
         child: WordGridView(
-          wordLength: _gameScreenController?.wordLength.value ?? 5,
+          wordLength: _controller?.wordLength.value ?? 5,
           width: wordGridViewWidth,
         ),
       ),
@@ -128,7 +131,8 @@ class _GameScreenState extends State<GameScreen>
   // named function ------------------------------------------------------------
 
   void _clickedFromKeyboard(int ascii) {
-    _gameScreenController?.setupWordBoard?.type(ascii);
+    _controller?.setupWordBoard?.type(ascii);
+    // _logger.d("game state = ${_controller?.gameState.toString()}");
     // _logger.d("type: ${String.fromCharCode(ascii)}");
   }
 

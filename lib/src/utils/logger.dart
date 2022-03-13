@@ -23,5 +23,4 @@ class Logger{
   void e(String message){
     log("<> E-$_tag: $message");
   }
-
 }

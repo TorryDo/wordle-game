@@ -224,7 +224,7 @@ class SetupWordBoard {
   }
 
   void _notifyGameState(GameState newGameState) {
-    liveData.gameState.value = const InitialGameState();
+    liveData.gameState.value = const PlayingGameState();
     liveData.gameState.value = newGameState;
   }
 

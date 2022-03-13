@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:wordle_game/src/utils/res/tint.dart';
 
 class TopBar extends StatelessWidget {
+  static const LEFT_ICON = 1;
+  static const RIGHT_ICON = 2;
+  static const MIDDLE_ICON = 3;
+
+  final Function(int where)? onClick;
+
   final tsize = 50.0;
 
-  const TopBar({Key? key}) : super(key: key);
+  const TopBar({Key? key, this.onClick}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,22 +29,39 @@ class TopBar extends StatelessWidget {
   }
 
   Widget _leftIcon() {
-    return const Center(
-        child: Icon(Icons.menu, color: Tint.THEME_COLOR_REVERSE));
+    return GestureDetector(
+      onTap: () => _onClick(where: LEFT_ICON),
+      child: const Center(
+          child: Icon(Icons.menu, color: Tint.THEME_COLOR_REVERSE)),
+    );
   }
 
   Widget _centerLogo() {
-    return const Center(
-      child: Icon(
-        Icons.android,
-        color: Tint.THEME_COLOR_REVERSE,
-        size: 50,
+    return GestureDetector(
+      onTap: () => _onClick(where: MIDDLE_ICON),
+      child: const Center(
+        child: Icon(
+          Icons.android,
+          color: Tint.THEME_COLOR_REVERSE,
+          size: 50,
+        ),
       ),
     );
   }
 
   Widget _rightIcon() {
-    return const Center(
-        child: Icon(Icons.settings, color: Tint.THEME_COLOR_REVERSE));
+    return GestureDetector(
+      onTap: () => _onClick(where: RIGHT_ICON),
+      child: const Center(
+          child: Icon(Icons.settings, color: Tint.THEME_COLOR_REVERSE)),
+    );
+  }
+
+  // magic ---------------------------------------------------------------------
+
+  void _onClick({
+    required int where,
+  }) {
+    if (onClick != null) onClick!(where);
   }
 }

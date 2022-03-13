@@ -13,8 +13,6 @@ class TypingState extends TypeState {
 }
 
 class EnterState extends TypeState {
-  // final List<CharacterState> wordStates;
-
   const EnterState();
 }
 
@@ -30,12 +28,10 @@ class HeadOfWordState extends TypeState {
   const HeadOfWordState();
 }
 
-class WordNotCompletedState extends TypeState{
+class WordNotCompletedState extends TypeState {
   const WordNotCompletedState();
 }
 
-class WrongWordState extends TypeState{
+class WrongWordState extends TypeState {
   const WrongWordState();
 }
-
-

@@ -24,6 +24,7 @@ class _EndGameScreenState extends State<EndGameScreen> with UINotifier {
 
   @override
   Widget build(BuildContext context) {
+    _controller?.onBuildState();
     return _wrapper();
   }
 
@@ -35,13 +36,21 @@ class _EndGameScreenState extends State<EndGameScreen> with UINotifier {
           children: [
             ElevatedButton(
                 onPressed: _controller?.navigateBackToGameScreen,
-                child: Text("back to gameScreen")),
+                child: Text(_getTitle())),
             ElevatedButton(
                 onPressed: () {},
-                child: Text("hrllo wortld"))
+                child: Text("answer is: ${_controller?.targetWord}"))
           ],
         ),
       ),
     );
+  }
+
+  String _getTitle() {
+    if(_controller == null) return "null";
+    if(_controller!.hasWon){
+      return "You Won, Genius!";
+    }
+    return "You Lose, Idiot!";
   }
 }

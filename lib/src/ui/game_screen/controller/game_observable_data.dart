@@ -10,11 +10,11 @@ class GameObservableData extends GetxController {
   final RxString targetWord = RxString('');
   final RxInt wordLength = RxInt(0);
 
-  final Rx<GameState> gameState = Rx<GameState>(const InitialGameState());
+  final Rx<GameState> gameState = Rx<GameState>(const PlayingGameState());
 
   final RxList<CharacterState> gameBoardStateList = RxList<CharacterState>();
 
-  final RxList<CharacterState> keyboardCharacters = RxList<CharacterState>([
+  final RxList<CharacterState> keyboardStateList = RxList<CharacterState>([
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', // start: 0, end: 10
     'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',      // start: 10, end: 19
     'Z', 'X', 'C', 'V', 'B', 'N', 'M'                 // start: 19, end: 26

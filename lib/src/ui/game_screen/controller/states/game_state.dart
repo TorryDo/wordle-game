@@ -1,15 +1,21 @@
+
 import 'package:hive/hive.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
+
+part 'game_state.g.dart';
 
 abstract class GameState {
   const GameState();
 }
 
-class InitialGameState extends GameState {
-  const InitialGameState();
+@HiveType(typeId: 6)
+class PlayingGameState extends GameState{
+  const PlayingGameState();
 }
 
+@HiveType(typeId: 7)
 class EndGameState extends GameState {
+
+  @HiveField(0)
   final bool hasWon;
 
   const EndGameState({
@@ -21,15 +27,6 @@ class ExitGameState extends GameState {
   const ExitGameState();
 }
 
-// class SaveGameState extends GameState {
-//   final String targetWord;
-//   final List<CharacterState> gameBoardStateList;
-//
-//   const SaveGameState({
-//     required this.gameBoardStateList,
-//     required this.targetWord,
-//   });
-// }
 
 @Deprecated("unImplemented")
 class ResetGameState extends GameState {

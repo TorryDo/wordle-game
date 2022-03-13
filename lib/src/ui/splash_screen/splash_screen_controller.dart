@@ -9,6 +9,7 @@ import 'package:wordle_game/src/ui/routes.dart';
 import '../../common/class/my_toast.dart';
 import '../../utils/constants.dart';
 import '../../utils/logger.dart';
+import '../game_screen/controller/states/character_state.dart';
 
 class SplashScreenController extends GetxController with WidgetLifecycle {
   final logger = Logger()
@@ -31,13 +32,22 @@ class SplashScreenController extends GetxController with WidgetLifecycle {
   void onDispose() {}
 
   // private -------------------------------------------------------------------
-  void _navigateToGameScreenAfter() {
+  void _navigateToGameScreenAfter() async{
     int delayTime = 1500;
-
+    // await _openHiveBox();
     Future.delayed(Duration(milliseconds: delayTime), () async{
       Get.offNamed(Routes.GAME_SCREEN);
     });
 
   }
+
+  // Future _openHiveBox()async{
+  //   Hive.registerAdapter(SaveGameModelAdapter());
+  //   Hive.registerAdapter(InitialCharacterStateAdapter());
+  //   Hive.registerAdapter(RightCharacterRightPositionStateAdapter());
+  //   Hive.registerAdapter(RightCharacterWrongPositionStateAdapter());
+  //   Hive.registerAdapter(WrongCharacterStateAdapter());
+  //   await Hive.openBox<SaveGameModel>(KeyValueAccessor.DEFAULT_BOX_NAME);
+  // }
 
 }

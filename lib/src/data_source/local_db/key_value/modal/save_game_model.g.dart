@@ -18,17 +18,20 @@ class SaveGameModelAdapter extends TypeAdapter<SaveGameModel> {
     };
     return SaveGameModel()
       ..targetWord = fields[0] as String
-      ..gameBoardStateList = (fields[1] as List).cast<CharacterState>();
+      ..gameBoardStateList = (fields[1] as List).cast<CharacterState>()
+      ..gameState = fields[2] as GameState;
   }
 
   @override
   void write(BinaryWriter writer, SaveGameModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.targetWord)
       ..writeByte(1)
-      ..write(obj.gameBoardStateList);
+      ..write(obj.gameBoardStateList)
+      ..writeByte(2)
+      ..write(obj.gameState);
   }
 
   @override

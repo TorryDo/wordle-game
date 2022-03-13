@@ -76,7 +76,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 0; i < 10; i++)
               KeyBoardButton(
-                characterState: _gameScreenController.keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardStateList[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -100,7 +100,7 @@ class _KeyBoardState extends State<KeyBoard> {
           children: [
             for (int i = 10; i < 19; i++)
               KeyBoardButton(
-                characterState: _gameScreenController.keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardStateList[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,
@@ -138,7 +138,7 @@ class _KeyBoardState extends State<KeyBoard> {
             // ------------------------------------------
             for (int i = 19; i < 26; i++)
               KeyBoardButton(
-                characterState: _gameScreenController.keyboardCharacters[i],
+                characterState: _gameScreenController.keyboardStateList[i],
                 width: _buttonWidth,
                 height: _buttonHeight,
                 color: widget.buttonColor,

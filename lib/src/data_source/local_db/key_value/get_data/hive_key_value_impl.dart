@@ -29,7 +29,11 @@ class HiveKeyValueImpl implements KeyValueAccessor {
 
   @override
   void createGameData(SaveGameModel gameModel) {
-    box.add(gameModel);
+    if(box.isNotEmpty){
+      box.putAt(0, gameModel);
+    }else{
+      box.add(gameModel);
+    }
   }
 
   @override
