@@ -10,9 +10,6 @@ import '../../../utils/constants.dart';
 import '../../../utils/logger.dart';
 
 class SetupWordBoard {
-  final _logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((SetupWordBoard).toString());
 
   final wordListRepository = GetIt.I.get<WordListRepository>();
   final GameObservableData liveData;
@@ -31,7 +28,6 @@ class SetupWordBoard {
 
   int get currentPositionInWord {
     _currentPositionInWord ??= _getCurrentPositionInWord();
-    // _logger.d("currentPosInWOrd = ${_currentPositionInWord!}");
     return _currentPositionInWord!;
   }
 

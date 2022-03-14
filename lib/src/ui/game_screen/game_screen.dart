@@ -9,7 +9,6 @@ import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
-import '../../utils/constants.dart';
 import '../../utils/logger.dart';
 
 class GameScreen extends StatefulWidget {
@@ -20,12 +19,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen>
-    with UINotifier, WidgetsBindingObserver {
+    with UINotifier, WidgetsBindingObserver, Logger {
   GameScreenController? _controller;
-
-  final _logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((GameScreen).toString());
 
   // lifecycle -----------------------------------------------------------------
 
@@ -93,9 +88,10 @@ class _GameScreenState extends State<GameScreen>
 
   Widget _topBar() {
     return TopBar(
-      onClick: (where){
+      onClick: (where) {
         _controller?.navigateToEndGameScreen(true);
-      },);
+      },
+    );
   }
 
   Widget _wordGridView() {
@@ -132,8 +128,6 @@ class _GameScreenState extends State<GameScreen>
 
   void _clickedFromKeyboard(int ascii) {
     _controller?.setupWordBoard?.type(ascii);
-    // _logger.d("game state = ${_controller?.gameState.toString()}");
-    // _logger.d("type: ${String.fromCharCode(ascii)}");
   }
 
   // ui notifier ---------------------------------------------------------------

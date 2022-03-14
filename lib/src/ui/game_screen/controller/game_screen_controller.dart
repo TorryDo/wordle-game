@@ -12,16 +12,11 @@ import 'package:wordle_game/src/ui/game_screen/controller/setup_save_game.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/routes.dart';
-import 'package:wordle_game/src/utils/constants.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
 class GameScreenController extends GameObservableData
-    with WidgetLifecycle, UINotifierReceiver {
+    with WidgetLifecycle, UINotifierReceiver, Logger {
   //
-  final _logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((GameScreenController).toString());
-
   Rx<AppLifecycleState?> appLifeCycleState = Rx(null);
 
   SetupWordBoard? setupWordBoard;
@@ -33,8 +28,7 @@ class GameScreenController extends GameObservableData
     setupKeyboard = SetupKeyboard(this);
     setupSaveGame = SetupSaveGame(this);
 
-    /// CAUTION: duplicated function
-    _loadPreviousGameIfExist();
+    _updatePreviousGameDataIfExist();
   }
 
   // lifecycle -----------------------------------------------------------------
@@ -42,15 +36,7 @@ class GameScreenController extends GameObservableData
   @override
   void onInitState() {
     _observe();
-    /// CAUTION: duplicated function
-    _loadPreviousGameIfExist();
-  }
-
-  @override
-  void onBuildState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _navigateIfPreviousGameEnded();
-    });
+    setupSaveGame?.updatePreviousGameState();
   }
 
   @override
@@ -68,8 +54,20 @@ class GameScreenController extends GameObservableData
     setupKeyboard?.resetKeyboard();
     setupWordBoard?.initWordBoard(itemNumber, wordLength.value);
     setupWordBoard?.setupTargetWord();
-    setupSaveGame?.deleteSaveGame();
+    setupSaveGame?.delete();
     gameState.value = const PlayingGameState();
+  }
+
+  void navigateToEndGameScreen(bool won) {
+    Get.toNamed(Routes.END_GAME_SCREEN, arguments: [
+      {"hasWon": won},
+      {"targetWord": targetWord.value},
+    ])?.then((value) {
+      d("receive in game screen controller, value = $value");
+      if (value == EndGameScreenController.newGame) {
+        setupNewGame();
+      }
+    });
   }
 
   // private function ----------------------------------------------------------
@@ -82,7 +80,7 @@ class GameScreenController extends GameObservableData
     /// - navigate to endGameScreen if 'gameState' is 'EndGameState'
     _gameStateListener = gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
-        Future.delayed(const Duration(milliseconds: 1500), () {
+        Future.delayed(const Duration(milliseconds: 2000), () {
           navigateToEndGameScreen(gameState.hasWon);
         });
       }
@@ -94,7 +92,7 @@ class GameScreenController extends GameObservableData
       if (appState == AppLifecycleState.inactive) {
         setupSaveGame?.save();
 
-        _logger.d("save in on paused");
+        d("save in on paused");
       }
     });
   }
@@ -103,30 +101,18 @@ class GameScreenController extends GameObservableData
   void _removeObserver() {
     _gameStateListener?.cancel();
     _appLifeCycleListener?.cancel();
-    _logger.d("removed observer");
+    d("removed observer");
   }
 
   /// if previous gameData exists, load Data? into GameObservableData's variable
   /// then check the condition
-  void _loadPreviousGameIfExist() async {
+  void _updatePreviousGameDataIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
     if (saveGameModel.value != null) {
-      setupSaveGame?.setupFromPreviousGameState();
+      setupSaveGame?.updatePreviousGameData();
     } else {
       setupNewGame();
     }
-  }
-
-  void navigateToEndGameScreen(bool won) {
-    Get.toNamed(Routes.END_GAME_SCREEN, arguments: [
-      {"hasWon": won},
-      {"targetWord": targetWord.value},
-    ])?.then((value) {
-      _logger.d("receive in game screen controller, value = $value");
-      if (value == EndGameScreenController.newGame) {
-        setupNewGame();
-      }
-    });
   }
 
   void _navigateIfPreviousGameEnded() {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/char_box.dart';
-import 'package:wordle_game/src/utils/constants.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
 class WordGridView extends StatefulWidget {
@@ -21,18 +20,13 @@ class WordGridView extends StatefulWidget {
   _WordGridViewState createState() => _WordGridViewState();
 }
 
-class _WordGridViewState extends State<WordGridView> {
+class _WordGridViewState extends State<WordGridView> with Logger {
   late GameScreenController _gameScreenController;
-
-  final _logger = Logger()
-      .setDebugEnabled(Constants.IS_DEBUG_ANABLED)
-      .setTag((WordGridView).toString());
 
   @override
   void initState() {
     super.initState();
     _gameScreenController = Get.find<GameScreenController>();
-
   }
 
   @override
@@ -55,12 +49,14 @@ class _WordGridViewState extends State<WordGridView> {
             itemCount: _gameScreenController.gameBoardStateList.length,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: charNumber,
-                crossAxisSpacing: crossAxisSpacing,
-                mainAxisSpacing: mainAxisSpacing),
+              crossAxisCount: charNumber,
+              crossAxisSpacing: crossAxisSpacing,
+              mainAxisSpacing: mainAxisSpacing,
+            ),
             itemBuilder: (context, index) => CharBox(
                   index: index,
-                  characterState: _gameScreenController.gameBoardStateList[index],
+                  characterState:
+                      _gameScreenController.gameBoardStateList[index],
                   boxSize: charBoxSize,
                   onClick: (index) {
                     _onCharBoxClick(index);
@@ -73,6 +69,6 @@ class _WordGridViewState extends State<WordGridView> {
   // logic ---------------------------------------------------------------------
 
   void _onCharBoxClick(int index) {
-    _logger.d("click on grid view at position = $index");
+    d("click on grid view at position = $index");
   }
 }
