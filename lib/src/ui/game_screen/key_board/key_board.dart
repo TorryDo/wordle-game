@@ -38,6 +38,7 @@ class _KeyBoardState extends State<KeyBoard> {
   @override
   void initState() {
     _gameScreenController = Get.find<GameScreenController>();
+    _gameScreenController.onInitState();
     super.initState();
   }
 

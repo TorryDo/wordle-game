@@ -4,12 +4,12 @@ import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller
 import 'package:wordle_game/src/ui/game_screen/word_board/char_box.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
-class WordGridView extends StatefulWidget {
+class WordBoard extends StatefulWidget {
   final int wordLength;
   final double width;
   final Color backgroundColor;
 
-  const WordGridView(
+  const WordBoard(
       {Key? key,
       required this.wordLength,
       required this.width,
@@ -17,10 +17,10 @@ class WordGridView extends StatefulWidget {
       : super(key: key);
 
   @override
-  _WordGridViewState createState() => _WordGridViewState();
+  _WordBoardState createState() => _WordBoardState();
 }
 
-class _WordGridViewState extends State<WordGridView> with Logger {
+class _WordBoardState extends State<WordBoard> with Logger {
   late GameScreenController _gameScreenController;
 
   @override

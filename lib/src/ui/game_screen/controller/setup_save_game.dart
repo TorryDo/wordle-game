@@ -1,11 +1,14 @@
-import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/observable_game_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 
 import '../../../data_source/local_db/key_value/modal/save_game_model.dart';
 import '../../../utils/logger.dart';
 
 class SetupSaveGame with Logger {
-  final GameObservableData liveData;
+  /// the 'liveData' is required for all function below work properly
+  ///
+  /// some of the functions below will update some Rx<Data> inside 'liveData'
+  final ObservableGameData liveData;
 
   SetupSaveGame(this.liveData);
 
@@ -20,10 +23,12 @@ class SetupSaveGame with Logger {
 
   void save() {
     if (liveData.saveGameModel.value == null) {
-      _createGameData();
+      _addNewGameData();
     } else {
       _saveGameData();
     }
+
+    d("game saved, targetWord = ${liveData.targetWord.value.toString()}");
   }
 
   void delete() {
@@ -53,7 +58,9 @@ class SetupSaveGame with Logger {
     liveData.gameState.value = liveData.saveGameModel.value!.gameState;
   }
 
-  void _createGameData() {
+  // private -------------------------------------------------------------------
+
+  void _addNewGameData() {
     var newSaveGameModel = SaveGameModel()
       ..targetWord = liveData.targetWord.value
       ..gameState = liveData.gameState.value
@@ -70,7 +77,5 @@ class SetupSaveGame with Logger {
 
     // liveData.keyValueRepository.updateGameData(liveData.saveGameModel.value!);
     liveData.saveGameModel.value!.save();
-
-    d("game saved, targetWord = ${liveData.targetWord.value.toString()}");
   }
 }

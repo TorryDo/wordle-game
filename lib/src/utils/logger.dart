@@ -3,34 +3,40 @@ import 'dart:developer';
 import 'package:wordle_game/src/utils/constants.dart';
 
 class Logger {
-  String? _tag;
-  bool? _isDebugEnabled;
+  String? _tagName;
+  bool? _isLoggerEnabled;
+
+  // getter & setter -----------------------------------------------------------
 
   String get tag {
-    _tag ??= _getDefaultTag();
-    return _tag!;
+    _tagName ??= _getDefaultTag();
+    return _tagName!;
   }
 
-  set tag(String str) {
-    _tag = str;
+  set setTagName(String tagName) {
+    _tagName = tagName;
   }
 
-  bool get isDebugEnabled {
-    if (_isDebugEnabled == null) debugEnabled = Constants.IS_DEBUG_ANABLED;
-    return _isDebugEnabled!;
+  bool get isLoggerEnabled {
+    _isLoggerEnabled ??= Constants.IS_DEBUG_ENABLED;
+    return _isLoggerEnabled!;
   }
 
-  set debugEnabled(bool enabled) {
-    _isDebugEnabled = enabled;
+  set enableLogger(bool enabled) {
+    _isLoggerEnabled = enabled;
   }
+
+  // public --------------------------------------------------------------------
 
   void d(String message) {
-    log("<> D-$tag: $message");
+    if (isLoggerEnabled) log("<> D-$tag: $message");
   }
 
   void e(String message) {
-    log("<> E-$tag: $message");
+    if (isLoggerEnabled) log("<> E-$tag: $message");
   }
+
+  // private -------------------------------------------------------------------
 
   String _getDefaultTag() => runtimeType.toString();
 }

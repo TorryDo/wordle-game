@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/observable_game_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/character_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
@@ -11,10 +11,12 @@ import '../../../utils/logger.dart';
 
 class SetupWordBoard {
 
-  final wordListRepository = GetIt.I.get<WordListRepository>();
-  final GameObservableData liveData;
-
   static const String SPACE_CHAR = ' ';
+
+  final wordListRepository = GetIt.I.get<WordListRepository>();
+  final ObservableGameData liveData;
+
+  SetupWordBoard(this.liveData);
 
   int get wordLength {
     return liveData.wordLength.value;
@@ -34,8 +36,6 @@ class SetupWordBoard {
   set currentPositionInWord(int n) {
     _currentPositionInWord = n;
   }
-
-  SetupWordBoard(this.liveData);
 
   String get targetWord => liveData.targetWord.value;
 
@@ -125,10 +125,8 @@ class SetupWordBoard {
 
             currentPositionInWord = 0;
 
-            _notifyTypingState(EnterState());
-            /*wordStates: liveData.gameBoardStateList.sublist(
-                    _findLastCharPosition() - wordLength + 1,
-                    _findLastCharPosition() + 1)*/
+            _notifyTypingState(const EnterState());
+
 
             if (_isMatchedTargetWord(tempInputCompletedWord)) {
               /// YOU WIN THIS GAME

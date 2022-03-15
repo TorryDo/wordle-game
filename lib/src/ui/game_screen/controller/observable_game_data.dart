@@ -6,7 +6,7 @@ import 'package:wordle_game/src/ui/game_screen/controller/states/character_state
 import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/states/type_state.dart';
 
-class GameObservableData extends GetxController {
+class ObservableGameData extends GetxController {
   final RxString targetWord = RxString('');
   final RxInt wordLength = RxInt(0);
 

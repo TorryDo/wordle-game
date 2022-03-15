@@ -10,7 +10,7 @@ abstract class WidgetLifecycle{
 
   void onSetState(){}
 
-  void onDispose(){}
+  void onDisposeState(){}
 
   WidgetLifecycle get lifecycle => this;
 

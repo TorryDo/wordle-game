@@ -18,7 +18,7 @@ class SplashScreenController extends GetxController
   }
 
   @override
-  void onDispose() {}
+  void onDisposeState() {}
 
   // private -------------------------------------------------------------------
   void _navigateToGameScreenAfter() async {

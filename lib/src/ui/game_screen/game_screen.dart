@@ -6,7 +6,7 @@ import 'package:wordle_game/src/common/widget/ads/banner_ads.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/game_screen_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
-import 'package:wordle_game/src/ui/game_screen/word_board/word_grid_view.dart';
+import 'package:wordle_game/src/ui/game_screen/word_board/word_board.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
 
 import '../../utils/logger.dart';
@@ -41,7 +41,7 @@ class _GameScreenState extends State<GameScreen>
 
   @override
   void dispose() {
-    _controller?.onDispose();
+    _controller?.onDisposeState();
     WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
@@ -103,7 +103,7 @@ class _GameScreenState extends State<GameScreen>
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: marginHorizontal),
-        child: WordGridView(
+        child: WordBoard(
           wordLength: _controller?.wordLength.value ?? 5,
           width: wordGridViewWidth,
         ),

@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:wordle_game/src/common/interface/ui_notifier.dart';
 import 'package:wordle_game/src/common/interface/widget_lifecycle.dart';
 import 'package:wordle_game/src/ui/end_game_screen/end_game_screen_controller.dart';
-import 'package:wordle_game/src/ui/game_screen/controller/game_observable_data.dart';
+import 'package:wordle_game/src/ui/game_screen/controller/observable_game_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_keyboard.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_save_game.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_wordboard.dart';
@@ -14,7 +14,7 @@ import 'package:wordle_game/src/ui/game_screen/controller/states/game_state.dart
 import 'package:wordle_game/src/ui/routes.dart';
 import 'package:wordle_game/src/utils/logger.dart';
 
-class GameScreenController extends GameObservableData
+class GameScreenController extends ObservableGameData
     with WidgetLifecycle, UINotifierReceiver, Logger {
   //
   Rx<AppLifecycleState?> appLifeCycleState = Rx(null);
@@ -40,16 +40,16 @@ class GameScreenController extends GameObservableData
   }
 
   @override
-  void onDispose() {
+  void onDisposeState() {
     _removeObserver();
   }
 
   // public --------------------------------------------------------------------
 
   void setupNewGame({
-    int length = 5,
+    int lengthInWord = 5,
   }) {
-    wordLength.value = length;
+    wordLength.value = lengthInWord;
     var itemNumber = (wordLength.value + 1) * wordLength.value;
     setupKeyboard?.resetKeyboard();
     setupWordBoard?.initWordBoard(itemNumber, wordLength.value);
@@ -59,14 +59,19 @@ class GameScreenController extends GameObservableData
   }
 
   void navigateToEndGameScreen(bool won) {
-    Get.toNamed(Routes.END_GAME_SCREEN, arguments: [
+    var _arguments = [
       {"hasWon": won},
       {"targetWord": targetWord.value},
-    ])?.then((value) {
-      d("receive in game screen controller, value = $value");
-      if (value == EndGameScreenController.newGame) {
+    ];
+
+    void _doActionFromEndGameScreen(dynamic action) {
+      if (action == EndGameScreenController.newGame) {
         setupNewGame();
       }
+    }
+
+    Get.toNamed(Routes.END_GAME_SCREEN, arguments: _arguments)?.then((action) {
+      _doActionFromEndGameScreen(action);
     });
   }
 
@@ -91,34 +96,23 @@ class GameScreenController extends GameObservableData
     _appLifeCycleListener = appLifeCycleState.stream.listen((appState) {
       if (appState == AppLifecycleState.inactive) {
         setupSaveGame?.save();
-
-        d("save in on paused");
       }
     });
   }
 
-  /// remove observer when the widget is disposed from the widget-tree
   void _removeObserver() {
     _gameStateListener?.cancel();
     _appLifeCycleListener?.cancel();
-    d("removed observer");
   }
 
-  /// if previous gameData exists, load Data? into GameObservableData's variable
-  /// then check the condition
+  /// if previous gameData exists, load Data? into 'liveData'
+  /// else, create new
   void _updatePreviousGameDataIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
     if (saveGameModel.value != null) {
       setupSaveGame?.updatePreviousGameData();
     } else {
       setupNewGame();
-    }
-  }
-
-  void _navigateIfPreviousGameEnded() {
-    var _gameState = gameState.value;
-    if (_gameState is EndGameState) {
-      navigateToEndGameScreen(_gameState.hasWon);
     }
   }
 }
