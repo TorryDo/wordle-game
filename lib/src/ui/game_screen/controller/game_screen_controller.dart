@@ -59,18 +59,21 @@ class GameScreenController extends ObservableGameData
   }
 
   void navigateToEndGameScreen(bool won) {
-    var _arguments = [
+    var _argumentsToNextScreen = [
       {"hasWon": won},
       {"targetWord": targetWord.value},
     ];
 
     void _doActionFromEndGameScreen(dynamic action) {
-      if (action == EndGameScreenController.newGame) {
+      if (action == EndGameScreenController.ACTION_NEW_GAME) {
         setupNewGame();
       }
     }
 
-    Get.toNamed(Routes.END_GAME_SCREEN, arguments: _arguments)?.then((action) {
+    Get.toNamed(
+      Routes.END_GAME_SCREEN,
+      arguments: _argumentsToNextScreen,
+    )?.then((action) {
       _doActionFromEndGameScreen(action);
     });
   }
@@ -81,7 +84,6 @@ class GameScreenController extends ObservableGameData
   StreamSubscription? _appLifeCycleListener;
 
   void _observe() {
-    /// observe gameState
     /// - navigate to endGameScreen if 'gameState' is 'EndGameState'
     _gameStateListener = gameState.stream.listen((gameState) {
       if (gameState is EndGameState) {
@@ -91,7 +93,6 @@ class GameScreenController extends ObservableGameData
       }
     });
 
-    /// observe appLifecycle
     /// - save game data when app on in-active state
     _appLifeCycleListener = appLifeCycleState.stream.listen((appState) {
       if (appState == AppLifecycleState.inactive) {
@@ -106,13 +107,15 @@ class GameScreenController extends ObservableGameData
   }
 
   /// if previous gameData exists, load Data? into 'liveData'
-  /// else, create new
+  /// else, create new gameData and save it
   void _updatePreviousGameDataIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
     if (saveGameModel.value != null) {
       setupSaveGame?.updatePreviousGameData();
+      d("update previous game data");
     } else {
       setupNewGame();
+      d("create new game data");
     }
   }
 }

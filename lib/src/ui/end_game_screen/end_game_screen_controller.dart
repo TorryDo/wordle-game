@@ -7,7 +7,7 @@ import '../../utils/logger.dart';
 class EndGameScreenController extends GetxController
     with WidgetLifecycle, UINotifierReceiver, Logger {
   //
-  static const newGame = 1;
+  static const ACTION_NEW_GAME = 1;
 
   dynamic argumentData;
 
@@ -22,9 +22,9 @@ class EndGameScreenController extends GetxController
     d("argument = ${argumentData.toString()}");
   }
 
-  // func -- -------------------------------------------------------------------
+  // func ----------------------------------------------------------------------
 
   void navigateBackToGameScreen() {
-    Get.back(result: newGame);
+    Get.back(result: ACTION_NEW_GAME);
   }
 }

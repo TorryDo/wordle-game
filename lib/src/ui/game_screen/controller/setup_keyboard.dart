@@ -18,14 +18,11 @@ class SetupKeyboard with WidgetLifecycle, Logger {
   /// some of the functions below will update some Rx<Data> inside 'liveData'
   final ObservableGameData _liveData;
 
-  SetupKeyboard(this._liveData);
-
-  // lifecycle -----------------------------------------------------------------
-
-  @override
-  void onInitState() {
+  SetupKeyboard(this._liveData){
     _observe();
   }
+
+  // lifecycle -----------------------------------------------------------------
 
   @override
   void onDisposeState() {

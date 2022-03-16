@@ -7,23 +7,29 @@ import 'package:wordle_game/src/utils/extension.dart';
 
 import '../../../data_source/word_list/word_list_repository.dart';
 import '../../../utils/constants.dart';
-import '../../../utils/logger.dart';
+
+/// need code optimization
 
 class SetupWordBoard {
-
-  static const String SPACE_CHAR = ' ';
+  /// CONVENTION:
+  /// - GreenState: RightCharRightPositionState
+  /// - YellowState: RightCharWrongPositionState
+  /// - BlackState: WrongCharacterState
+  ///
 
   final wordListRepository = GetIt.I.get<WordListRepository>();
-  final ObservableGameData liveData;
+  final ObservableGameData _liveData;
 
-  SetupWordBoard(this.liveData);
+  SetupWordBoard(this._liveData);
+
+  // getter & setter -----------------------------------------------------------
 
   int get wordLength {
-    return liveData.wordLength.value;
+    return _liveData.wordLength.value;
   }
 
   set wordLength(int n) {
-    liveData.wordLength.value = n;
+    _liveData.wordLength.value = n;
   }
 
   int? _currentPositionInWord;
@@ -37,10 +43,10 @@ class SetupWordBoard {
     _currentPositionInWord = n;
   }
 
-  String get targetWord => liveData.targetWord.value;
+  String get targetWord => _liveData.targetWord.value;
 
   set targetWord(String newValue) {
-    liveData.targetWord.value = newValue;
+    _liveData.targetWord.value = newValue;
   }
 
   int _getCurrentPositionInWord() {
@@ -53,8 +59,8 @@ class SetupWordBoard {
 
   void initWordBoard(int itemNumber, int wordLength) {
     this.wordLength = wordLength;
-    liveData.gameBoardStateList.value =
-        List.filled(itemNumber, const InitialCharacterState(SPACE_CHAR));
+    _liveData.gameBoardStateList.value =
+        List.filled(itemNumber, const InitialCharacterState(Const.SPACE_CHAR));
   }
 
   // get callback from keyboard widget
@@ -68,13 +74,13 @@ class SetupWordBoard {
         _notifyTypingState(const TailOfWordState());
         return;
       } else {
-        int lastEmptyChar = _findEmptyCharPosition();
+        int lastEmptyChar = _firstEmptyCharPosition();
         if (lastEmptyChar < 0) return;
 
-        liveData.gameBoardStateList[lastEmptyChar] =
+        _liveData.gameBoardStateList[lastEmptyChar] =
             InitialCharacterState(String.fromCharCode(ascii));
 
-        liveData.typeState.value = TypingState(ascii: ascii);
+        _liveData.typeState.value = TypingState(ascii: ascii);
 
         currentPositionInWord++;
       }
@@ -82,8 +88,8 @@ class SetupWordBoard {
 
     void _inputDelete() {
       if (!_isStartOfWord()) {
-        liveData.gameBoardStateList[_findLastCharPosition()] =
-            const InitialCharacterState(SPACE_CHAR);
+        _liveData.gameBoardStateList[_lastCharPosition()] =
+            const InitialCharacterState(Const.SPACE_CHAR);
         currentPositionInWord--;
         _notifyTypingState(const DeleteState());
         return;
@@ -106,27 +112,24 @@ class SetupWordBoard {
         _isExistedWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
             final statusList = getCharactersStatusListInWord(
-                liveData.targetWord.value, tempInputCompletedWord);
+                _liveData.targetWord.value, tempInputCompletedWord);
 
-            final tempLastChar = _findLastCharPosition();
+            final tempLastChar = _lastCharPosition();
 
             for (int i = 0; i < wordLength; i++) {
               if (statusList[i] == CharStateAlias.RIGHT_CHAR_RIGHT_POSITION) {
-                _notifyToRightCharRightPlaceState(
-                    tempLastChar - wordLength + 1 + i);
+                _updateGreenState(tempLastChar - wordLength + 1 + i);
               } else if (statusList[i] == CharStateAlias.WRONG_CHAR) {
-                _notifyWrongCharState(tempLastChar - wordLength + 1 + i);
+                _updateBlackState(tempLastChar - wordLength + 1 + i);
               } else if (statusList[i] ==
                   CharStateAlias.RIGHT_CHAR_WRONG_POSITION) {
-                _notifyToRightCharWrongPlaceState(
-                    tempLastChar - wordLength + 1 + i);
+                _updateYellowState(tempLastChar - wordLength + 1 + i);
               }
             }
 
             currentPositionInWord = 0;
 
             _notifyTypingState(const EnterState());
-
 
             if (_isMatchedTargetWord(tempInputCompletedWord)) {
               /// YOU WIN THIS GAME
@@ -154,38 +157,36 @@ class SetupWordBoard {
     } else if (ascii == 10) {
       _inputEnter();
     }
-
-    // _logger.d(liveData.gameBoardStateList.toString());
-    // _logger.d(liveData.gameBoardStateList.lastIndexWhere((c) => c.char != EMPTY_CHAR).toString());
   }
 
   void resetWordBoard() {
     (i) {
-      liveData.gameBoardStateList[i] = const InitialCharacterState(SPACE_CHAR);
-    }.repeat(liveData.gameBoardStateList.length);
+      _liveData.gameBoardStateList[i] =
+          const InitialCharacterState(Const.SPACE_CHAR);
+    }.repeat(_liveData.gameBoardStateList.length);
     currentPositionInWord = 0;
     setupTargetWord();
   }
 
   String getCompleteWord() {
     /// when this function is called, last char is in the end of word
-    final lastChar = _findLastCharPosition();
+    final lastChar = _lastCharPosition();
     String result = '';
     for (int i = lastChar + 1 - wordLength; i < lastChar + 1; i++) {
-      result += liveData.gameBoardStateList[i].char;
+      result += _liveData.gameBoardStateList[i].char;
     }
     return result;
   }
 
   void setupTargetWord({Function(bool)? wordReady}) async {
-    liveData.targetWord.value = await wordListRepository.getRandomWord();
+    _liveData.targetWord.value = await wordListRepository.getRandomWord();
     wordReady ?? (true);
   }
 
-  /// private ------------------------------------------------------------------
+  // private -------------------------------------------------------------------
 
   bool _isMatchedTargetWord(String word) {
-    return word.toLowerCase() == liveData.targetWord.value;
+    return word.toLowerCase() == _liveData.targetWord.value;
   }
 
   void _isExistedWord(String word, Function(bool) result) async {
@@ -196,39 +197,38 @@ class SetupWordBoard {
   // notify states -------------------------------------------------------------
 
   void _notifyTypingState(TypeState newTypeState) {
-    liveData.typeState.value = const InitialState();
-    liveData.typeState.value = newTypeState;
+    _liveData.typeState.value = const InitialState();
+    _liveData.typeState.value = newTypeState;
   }
 
-  void _notifyWrongCharState(int position) {
-    final tempChar = liveData.gameBoardStateList[position].char;
-    liveData.gameBoardStateList[position] = WrongCharacterState(tempChar);
+  void _updateBlackState(int position) {
+    final tempChar = _liveData.gameBoardStateList[position].char;
+    _liveData.gameBoardStateList[position] = WrongCharacterState(tempChar);
   }
 
-  void _notifyToRightCharRightPlaceState(int position) {
-    final tempChar = liveData.gameBoardStateList[position].char;
-    liveData.gameBoardStateList[position] =
+  void _updateGreenState(int position) {
+    final tempChar = _liveData.gameBoardStateList[position].char;
+    _liveData.gameBoardStateList[position] =
         RightCharacterRightPositionState(tempChar);
   }
 
-  void _notifyToRightCharWrongPlaceState(int position) {
-    final tempChar = liveData.gameBoardStateList[position].char;
-    liveData.gameBoardStateList[position] =
+  void _updateYellowState(int position) {
+    final tempChar = _liveData.gameBoardStateList[position].char;
+    _liveData.gameBoardStateList[position] =
         RightCharacterWrongPositionState(tempChar);
   }
 
   void _notifyGameState(GameState newGameState) {
-    liveData.gameState.value = const PlayingGameState();
-    liveData.gameState.value = newGameState;
+    _liveData.gameState.value = const PlayingGameState();
+    _liveData.gameState.value = newGameState;
   }
 
   // shorten function ----------------------------------------------------------
 
   bool _isLastTry() =>
-      _findLastCharPosition() + 1 >= liveData.gameBoardStateList.length;
+      _lastCharPosition() + 1 >= _liveData.gameBoardStateList.length;
 
   bool _isEndOfWord() {
-    // _logger.d("$currentPositionInWord --- $wordLength");
     return currentPositionInWord >= wordLength;
   }
 
@@ -237,18 +237,14 @@ class SetupWordBoard {
   }
 
   int _findLastCharPositionOfInitialState() {
-    int rs = _findLastCharPosition();
-    if (rs < 0) return -1;
-    if (liveData.gameBoardStateList[rs] is InitialCharacterState) {
-      return rs;
-    }
-
-    return -1;
+    return _liveData.gameBoardStateList.initialCharStateHasCharPosition;
   }
 
-  int _findEmptyCharPosition() =>
-      liveData.gameBoardStateList.indexWhere((c) => c.char == SPACE_CHAR);
+  int _firstEmptyCharPosition() {
+    return _liveData.gameBoardStateList.firstEmptyCharPosition;
+  }
 
-  int _findLastCharPosition() =>
-      liveData.gameBoardStateList.lastIndexWhere((c) => c.char != SPACE_CHAR);
+  int _lastCharPosition() {
+    return _liveData.gameBoardStateList.lastCharPosition;
+  }
 }

@@ -18,7 +18,7 @@ class Logger {
   }
 
   bool get isLoggerEnabled {
-    _isLoggerEnabled ??= Constants.IS_DEBUG_ENABLED;
+    _isLoggerEnabled ??= Const.IS_DEBUG_ENABLED;
     return _isLoggerEnabled!;
   }
 

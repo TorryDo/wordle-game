@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:wordle_game/src/utils/extension.dart';
 
+import '../../../../utils/constants.dart';
+
 part 'character_state.g.dart';
 
 abstract class CharacterState {
@@ -50,7 +52,7 @@ extension ConvertToCharacterStateList on List<String> {
 
 }
 
-extension ConvertFromCharListToCharState on List<CharacterState> {
+extension CharStateListExt on List<CharacterState> {
   List<String> toStringList() {
     List<String> result = [];
     for (var item in this) {
@@ -58,6 +60,25 @@ extension ConvertFromCharListToCharState on List<CharacterState> {
     }
     return result;
   }
+
+  int get firstEmptyCharPosition {
+    return indexWhere((c) => c.char == Const.SPACE_CHAR);
+  }
+
+  int get lastCharPosition {
+    return lastIndexWhere((c) => c.char != Const.SPACE_CHAR);
+  }
+
+  int get initialCharStateHasCharPosition{
+    int rs = lastCharPosition;
+    if (rs < 0) return -1;
+    if (this[rs] is InitialCharacterState) {
+      return rs;
+    }
+
+    return -1;
+  }
+
 }
 
 List<int> getCharactersStatusListInWord(String target, String input) {
