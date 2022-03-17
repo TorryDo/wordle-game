@@ -81,7 +81,7 @@ extension CharStateListExt on List<CharacterState> {
 
 }
 
-List<int> getCharactersStatusListInWord(String target, String input) {
+List<int> extractCharStatusListInWord(String target, String input) {
   input = input.toLowerCase();
 
   List<int> rs = List.filled(target.length, CharStateAlias.WRONG_CHAR);

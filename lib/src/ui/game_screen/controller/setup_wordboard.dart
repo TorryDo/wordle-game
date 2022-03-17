@@ -111,7 +111,7 @@ class SetupWordBoard {
 
         _isExistedWord(tempInputCompletedWord, (isCorrect) {
           if (isCorrect) {
-            final statusList = getCharactersStatusListInWord(
+            final statusList = extractCharStatusListInWord(
                 _liveData.targetWord.value, tempInputCompletedWord);
 
             final tempLastChar = _lastCharPosition();

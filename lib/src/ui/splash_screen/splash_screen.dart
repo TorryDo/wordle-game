@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/ui/splash_screen/splash_screen_controller.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -13,6 +12,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   SplashScreenController? _controller;
 
+  // lifecycle -----------------------------------------------------------------
   @override
   void initState() {
     super.initState();
@@ -29,15 +29,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     _controller?.onBuildState();
-    return _screen();
+    return _outer();
   }
 
-  Widget _screen(){
-    return SafeArea(child: Container(color: Colors.blue));
-  }
+  // widgets -------------------------------------------------------------------
 
-  Widget _linearProgress(){
-    return LinearProgressIndicator();
+  Widget _outer() {
+    return SafeArea(
+      child: Image.asset(
+        "assets/images/nature.jpg",
+        alignment: Alignment.center,
+        height: double.infinity,
+        width: double.infinity,
+        fit: BoxFit.fill,
+      ),
+    );
   }
 
 }

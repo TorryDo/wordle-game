@@ -8,9 +8,11 @@ class TopBar extends StatelessWidget {
 
   final Function(int where)? onClick;
 
+  final Color? color;
+
   final tsize = 50.0;
 
-  const TopBar({Key? key, this.onClick}) : super(key: key);
+  const TopBar({Key? key, this.onClick, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class TopBar extends StatelessWidget {
 
   Widget _wrapper() {
     return Container(
-      color: Colors.blueGrey.withAlpha(10),
+      color: color,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Flexible(flex: 1, child: _leftIcon()),
         Flexible(flex: 4, child: _centerLogo()),

@@ -41,18 +41,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _navigator() {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Wordle Game',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: MyThemes.lightTheme,
       darkTheme: MyThemes.darkTheme,
       home: const SplashScreen(),
-      defaultTransition: Transition.fade,
+      // defaultTransition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
       getPages: [
-        GetPage(name: Routes.SPLASH_SCREEN, page: () => const SplashScreen()),
-        GetPage(name: Routes.GAME_SCREEN, page: () => const GameScreen()),
+        // GetPage(
+        //   name: Routes.SPLASH_SCREEN,
+        //   page: () => const SplashScreen(),
+        //   transition: Transition.zoom,
+        //   transitionDuration: const Duration(milliseconds: 1000),
+        // ),
         GetPage(
-            name: Routes.END_GAME_SCREEN, page: () => const EndGameScreen()),
+          name: Routes.GAME_SCREEN,
+          page: () => const GameScreen(),
+          transition: Transition.fadeIn,
+          transitionDuration: const Duration(milliseconds: 1500),
+        ),
+        GetPage(
+          name: Routes.END_GAME_SCREEN,
+          page: () => const EndGameScreen(),
+          transition: Transition.fadeIn,
+          // transitionDuration: const Duration(microseconds: 1500),
+        ),
       ],
     );
   }

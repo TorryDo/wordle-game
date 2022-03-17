@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/common/class/my_toast.dart';
@@ -8,6 +10,7 @@ import 'package:wordle_game/src/ui/game_screen/key_board/key_board.dart';
 import 'package:wordle_game/src/ui/game_screen/top_bar/top_bar.dart';
 import 'package:wordle_game/src/ui/game_screen/word_board/word_board.dart';
 import 'package:wordle_game/src/utils/get_width_height.dart';
+import 'package:wordle_game/src/utils/res/tint.dart';
 
 import '../../utils/logger.dart';
 
@@ -21,6 +24,8 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen>
     with UINotifier, WidgetsBindingObserver, Logger {
   GameScreenController? _controller;
+
+  final Color _backgroundColor = Colors.transparent;
 
   // lifecycle -----------------------------------------------------------------
 
@@ -36,7 +41,7 @@ class _GameScreenState extends State<GameScreen>
   @override
   Widget build(BuildContext context) {
     _controller?.onBuildState();
-    return _safeAreaPage();
+    return _outer();
   }
 
   @override
@@ -53,7 +58,40 @@ class _GameScreenState extends State<GameScreen>
 
   // widgets -------------------------------------------------------------------
 
-  Widget _safeAreaPage() => SafeArea(child: Scaffold(body: _page()));
+  Widget _outer() {
+    return SafeArea(
+      child: Scaffold(
+        body: Material(
+          child: _blur(),
+        ),
+      ),
+    );
+  }
+
+  Widget _blur() {
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/nature.jpg",
+          alignment: Alignment.center,
+          height: double.infinity,
+          width: double.infinity,
+          fit: BoxFit.fill,
+        ),
+        ClipRRect(
+          // Clip it cleanly.
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+            child: Container(
+              color: Colors.black.withOpacity(0.55),
+              alignment: Alignment.center,
+            ),
+          ),
+        ),
+        _page()
+      ],
+    );
+  }
 
   Widget _page() {
     var actionBarHeight = 70.0;
@@ -61,36 +99,30 @@ class _GameScreenState extends State<GameScreen>
     var gridFlex = 5;
     var keyBoardFlex = 2;
 
-    return Material(
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.black87,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: actionBarHeight,
-              child: _topBar(),
-            ),
-            Flexible(
-                flex: gridFlex, fit: FlexFit.tight, child: _wordGridView()),
-            Flexible(
-                flex: keyBoardFlex, fit: FlexFit.tight, child: _keyBoard()),
-            SizedBox(
-                width: double.infinity, height: actionBarHeight, child: _ads()),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      // color: Colors.black87,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: actionBarHeight,
+            child: _topBar(),
+          ),
+          Flexible(flex: gridFlex, fit: FlexFit.tight, child: _wordGridView()),
+          Flexible(flex: keyBoardFlex, fit: FlexFit.tight, child: _keyBoard()),
+          SizedBox(
+              width: double.infinity, height: actionBarHeight, child: _ads()),
+        ],
       ),
     );
   }
 
   Widget _topBar() {
     return TopBar(
-      onClick: (where) {
-        _controller?.navigateToEndGameScreen(true);
-      },
+      color: Tint.main_color_darker,
     );
   }
 
@@ -106,6 +138,7 @@ class _GameScreenState extends State<GameScreen>
         child: WordBoard(
           wordLength: _controller?.wordLength.value ?? 5,
           width: wordGridViewWidth,
+          backgroundColor: _backgroundColor,
         ),
       ),
     );
@@ -115,8 +148,9 @@ class _GameScreenState extends State<GameScreen>
     return Align(
         alignment: Alignment.bottomCenter,
         child: KeyBoard(
-          buttonColor: Colors.white10,
+          buttonColor: Tint.button_color,
           onClick: (ascii) => _clickedFromKeyboard(ascii),
+          backgroundColor: _backgroundColor,
         ));
   }
 

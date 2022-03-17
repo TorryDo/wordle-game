@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:wordle_game/src/common/interface/ui_notifier.dart';
 import 'package:wordle_game/src/common/interface/widget_lifecycle.dart';
+import 'package:wordle_game/src/ui/end_game_screen/end_game_screen.dart';
 import 'package:wordle_game/src/ui/end_game_screen/end_game_screen_controller.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/observable_game_data.dart';
 import 'package:wordle_game/src/ui/game_screen/controller/setup_keyboard.dart';
@@ -36,7 +37,7 @@ class GameScreenController extends ObservableGameData
   @override
   void onInitState() {
     _observe();
-    setupSaveGame?.updatePreviousGameState();
+    _updateGameStateIfExist();
   }
 
   @override
@@ -59,12 +60,12 @@ class GameScreenController extends ObservableGameData
   }
 
   void navigateToEndGameScreen(bool won) {
-    var _argumentsToNextScreen = [
+    var _argumentSender = [
       {"hasWon": won},
       {"targetWord": targetWord.value},
     ];
 
-    void _doActionFromEndGameScreen(dynamic action) {
+    void _receiveAction(dynamic action) {
       if (action == EndGameScreenController.ACTION_NEW_GAME) {
         setupNewGame();
       }
@@ -72,9 +73,9 @@ class GameScreenController extends ObservableGameData
 
     Get.toNamed(
       Routes.END_GAME_SCREEN,
-      arguments: _argumentsToNextScreen,
+      arguments: _argumentSender,
     )?.then((action) {
-      _doActionFromEndGameScreen(action);
+      _receiveAction(action);
     });
   }
 
@@ -106,16 +107,25 @@ class GameScreenController extends ObservableGameData
     _appLifeCycleListener?.cancel();
   }
 
+  // named  --------------------------------------------------------------------
+
   /// if previous gameData exists, load Data? into 'liveData'
   /// else, create new gameData and save it
   void _updatePreviousGameDataIfExist() async {
     saveGameModel.value = await keyValueRepository.getLastGameData();
-    if (saveGameModel.value != null) {
+    if (havePreviousGameData) {
       setupSaveGame?.updatePreviousGameData();
       d("update previous game data");
     } else {
       setupNewGame();
       d("create new game data");
+    }
+  }
+
+  void _updateGameStateIfExist() {
+    if (havePreviousGameData) {
+      setupSaveGame?.updatePreviousGameState();
+      d("update previous Game State");
     }
   }
 }
