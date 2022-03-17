@@ -17,3 +17,6 @@ https://user-images.githubusercontent.com/85553681/158769038-c321f3a0-8c41-4fae-
 ## Time consuming
 - February to March (2022)
 
+## Note
+- Stay tuned, the game is not finished yet. I'll comeback and make this project great again, someday.
+
