@@ -1,6 +1,6 @@
-# wordle_game
+# Wordle_Game
 
-## tutorial
+## Tutorial
 - You'll have 6 chances to guess the 5-letter word, so make every guess count! Try using a word that contains many different letters to narrow down your future guesses.
 
 - After you make a guess, the tile colors will change:
