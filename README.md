@@ -18,5 +18,5 @@ https://user-images.githubusercontent.com/85553681/158769038-c321f3a0-8c41-4fae-
 - February to March (2022)
 
 ## Note
-- Stay tuned, this project is not finished yet. I'll comeback and make this game great again, someday.
+- Stay tuned, this project is not perfect yet. I'll comeback and make this game great again, someday.
 
